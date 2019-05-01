@@ -1,6 +1,6 @@
 {
   "name": "pom-opener",
-  "version": "2019.1.4",
+  "version": "2019.1.5",
   "private": true,
   "main": "src/electron-main.js",
   "homepage": "./",
@@ -45,7 +45,7 @@
   ],
   "devDependencies": {
     "electron": "^4.0.5",
-    "electron-builder": "^20.38.5",
+    "electron-builder": "^20.40.2",
     "foreman": "^3.0.1",
     "typescript": "^3.3.3333"
   },

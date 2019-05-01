@@ -31,7 +31,7 @@ const scanForIntellij = async () => {
         }
         return {
             type: 'INTELLIJ',
-            args: [`{{file}}`],
+            args: [`{{directory}}`],
             path,
             name
         }
