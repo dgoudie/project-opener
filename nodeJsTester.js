@@ -1,4 +1,4 @@
-const Runner = require('./src/runner');
+const Runner = require('./src/utils/run/runner');
 
 // (async () => {
 //     const db = new Nedb({ filename: "C://Users//dgoudie//AppData//Roaming//pom-opener//poms.db", autoload: true });
@@ -12,8 +12,9 @@ const Runner = require('./src/runner');
 // })()
 
 (async () => {
-    await Runner.run(
-        {"type":"OTHER","name":"Other","path":"C:\\windows\\explorer.exe","args":["{{directory}}"]},
+    const a = await Runner.run(
+        {"type":"OTHER","name":"Other","path":"a","args":["{{directory}}"]},
         "C:/Users/dgoudie/Documents/Github/Journal-UI/package.json"
     )
+    console.log(a);
 })()

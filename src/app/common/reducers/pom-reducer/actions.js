@@ -2,8 +2,8 @@ import { LOAD_POMS, REMOVE_POMS_BY_PATH, FILTER_POMS, CLEAR_FILTERED_POMS, SET_C
 
 import { hideWindow, setFilterText } from "../app-reducer/actions";
 import { compactPomsDatabase } from '../database-reducer/actions'
-import { addDialog } from "../dialog-reducer/actions";
 import { setCurrentlyScanning } from '../path-reducer/actions';
+import { addWarnDialog, addErrorDialog } from "app/common/reducers/dialog-reducer/actions";
 
 const electron = window.require("electron");
 const Runner = electron.remote.require("./utils/run/runner.js");
@@ -112,11 +112,7 @@ export const setCursor = value => dispatch => {
   });
 };
 
-export const openPom = pom => (dispatch, getState) => {
-  if (!pom) {
-    dispatch(addDialog("error", "POM was not provided."));
-    return;
-  }
+export const openPom = pom => async (dispatch, getState) => {
 
   pom.clickCount += 1;
 
@@ -124,33 +120,41 @@ export const openPom = pom => (dispatch, getState) => {
 
   if (pom.path.indexOf("pom.xml") >= 0) {
     ide = getState().settingsReducer.mavenIde;
-    if (!ide) {
-      dispatch(addDialog("error", "Maven IDE was not specified"));
+    if (!ide.path) {
+      dispatch(addWarnDialog('Maven IDE is not set up. Please go to Settings -> IDEs and set one up for Maven projects.'));
       return;
     }
-    Runner.run(ide, pom.path);
   }
 
   else if (pom.path.indexOf("package.json") >= 0) {
     ide = getState().settingsReducer.npmIde;
-    if (!ide) {
-      dispatch(addDialog("error", "NPM IDE was not specified"));
+    if (!ide.path) {
+      dispatch(addWarnDialog('NPM IDE is not set up. Please go to Settings -> IDEs and set one up for NPM projects.'));
       return;
     }
-    Runner.run(ide, pom.path);
   }
-
+  
   dispatch(setFilterText(''));
   dispatch(setCursor(0));
   dispatch(incrementPomClickCount(pom));
   dispatch(hideWindow());
+
+  const error = await Runner.run(ide, pom.path);
+  if (error) {
+    switch (true) {
+      case !!error.message.match(/ENOENT/): {
+        dispatch(addErrorDialog(`Unable to find executable '${error.message.replace(/(ENOENT|spawn|\s)/g, '')}' Go to Settings -> IDEs and verify all configuration is valid.`));
+        break;
+      }
+      default: {
+        dispatch(addErrorDialog(error.message));
+        break;
+      }
+    }
+  }
 };
 
 export const incrementPomClickCount = pom => async (dispatch, getState) => {
-  if (!pom) {
-    dispatch(addDialog("error", "POM was not provided."));
-    return;
-  }
   await new Promise((resolve, reject) => {
     getState().databaseReducer.pomDatabase.update({ path: pom.path }, { $inc: { clickCount: 1 } }, (err) => {
       if (err) {

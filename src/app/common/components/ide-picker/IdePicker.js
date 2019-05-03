@@ -128,7 +128,7 @@ class IdePicker extends Component {
         mavenIde.path = event.target.value.replace(/"/g, "");
         this.props.setMavenIde(mavenIde);
         this.forceUpdate();
-        this.props.onChange();
+        this.props.onChange && this.props.onChange();
     }
 
     handleNpmIdePathChange = (event) => {
@@ -136,7 +136,7 @@ class IdePicker extends Component {
         npmIde.path = event.target.value.replace(/"/g, "");
         this.props.setNpmIde(npmIde);
         this.forceUpdate();
-        this.props.onChange();
+        this.props.onChange && this.props.onChange();
     }
 
     handleMvnIdeArgsChange = (event) => {
@@ -144,7 +144,7 @@ class IdePicker extends Component {
         mavenIde.args = event.target.value.split(' ');
         this.props.setMavenIde(mavenIde);
         this.forceUpdate();
-        this.props.onChange();
+        this.props.onChange && this.props.onChange();
     }
 
     handleNpmIdeArgsChange = (event) => {
@@ -152,7 +152,7 @@ class IdePicker extends Component {
         npmIde.args = event.target.value.split(' ');
         this.props.setNpmIde(npmIde);
         this.forceUpdate();
-        this.props.onChange();
+        this.props.onChange && this.props.onChange();
     }
 
     setToManualMavenIde = () => {

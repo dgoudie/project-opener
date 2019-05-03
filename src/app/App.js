@@ -10,6 +10,7 @@ import SettingsView from './views/settings-view/SettingsView';
 import { connect } from 'react-redux';
 
 import { initializeApp, setWindowVisible, setActiveView, hideWindow, isSetupComplete } from './common/reducers/app-reducer/actions';
+import MessageDialog from 'app/common/components/message-dialog/MessageDialog';
 
 const electron = window.require('electron');
 
@@ -21,6 +22,7 @@ class App extends Component {
         {this.props.activeView === 'settings-view' && <SettingsView />}
         {this.props.activeView === 'main-view' && <MainView />}
         {this.props.activeView === 'welcome-view' && <WelcomeView />}
+        {this.props.dialogQueue.length && <MessageDialog dialog={this.props.dialogQueue[0]}/>}
       </div>
     );
   }
@@ -50,7 +52,8 @@ const mapStateToProps = state => ({
   filterText: state.appReducer.filterText,
   viewSpecificKeyHandler: state.appReducer.viewSpecificKeyHandler,
   reScanDirectoriesOvernight: state.settingsReducer.reScanDirectoriesOvernight,
-  theme: state.settingsReducer.theme
+  theme: state.settingsReducer.theme,
+  dialogQueue: state.dialogReducer.dialogQueue
 })
 
 export default connect(mapStateToProps, { setWindowVisible, setActiveView, initializeApp, hideWindow, isSetupComplete })(App);
