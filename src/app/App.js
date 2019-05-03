@@ -22,7 +22,7 @@ class App extends Component {
         {this.props.activeView === 'settings-view' && <SettingsView />}
         {this.props.activeView === 'main-view' && <MainView />}
         {this.props.activeView === 'welcome-view' && <WelcomeView />}
-        {this.props.dialogQueue.length && <MessageDialog dialog={this.props.dialogQueue[0]}/>}
+        {this.props.dialogQueue.length ? <MessageDialog dialog={this.props.dialogQueue[0]}/> : null}
       </div>
     );
   }
