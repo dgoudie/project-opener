@@ -1,0 +1,47 @@
+.toggle {
+    height: 25px;
+    display: flex;
+    user-select: none;
+    border: 2px solid transparent;
+    border-radius: 2px;
+}
+
+.toggle.on {
+    border-color: var(--primary-light);
+}
+
+.toggle.off {
+    border-color: var(--secondary-dark);
+}
+
+.toggle>* {
+    width: 48px;
+    text-align: center;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    padding-bottom: 2px;
+    cursor: pointer;
+    color: var(--text-on-secondary);
+    border: none;
+    background: var(--secondary);
+}
+
+.toggle>*:not(.selected):hover {
+    background: var(--secondary-light);
+}
+
+.toggle>.on.selected {
+    color: var(--text-on-primary);
+}
+
+.toggle>.off.selected {
+    color: var(--text-on-secondary);
+}
+
+.toggle>.on.selected {
+    background-color: var(--primary-light);
+}
+
+.toggle>.off.selected {
+    background-color: var(--secondary-dark);
+}

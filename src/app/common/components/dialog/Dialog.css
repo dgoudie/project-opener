@@ -1,0 +1,50 @@
+
+
+.dialog>.background {
+    position: fixed;
+    z-index: 2;
+    right: 0;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    animation: 150ms darken forwards;
+}
+
+.dialog>.window {
+    background-color: var(--secondary);
+    position: fixed;
+    border-radius: 3px;
+    margin: auto;
+    z-index: 3;
+    right: 0;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: max-content;
+    height: max-content;
+    animation: 150ms grow forwards;
+}
+
+@keyframes grow {
+    0%{
+        transform: scale(0.8);
+    }
+
+    90% {
+        transform: scale(1.02);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes darken {
+    0%{
+        background-color: rgba(0,0,0,0);
+    }
+
+    100% {
+        background-color: rgba(0,0,0,0.7);
+    }
+}

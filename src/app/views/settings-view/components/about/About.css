@@ -1,0 +1,28 @@
+.about {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 68px;
+    height: calc(100vh - 200px);
+}
+.about .header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.about .header img {
+    width: 160px;
+    box-shadow: 0 2px 1px -1px rgba(0,0,0,.2), 0 1px 1px 0 rgba(0,0,0,.14), 0 1px 3px 0 rgba(0,0,0,.12);
+}
+.about .footer {
+    display: flex;
+    justify-content: space-between;
+    margin: 24px;
+    align-items: center;
+    width: -webkit-fill-available;
+}
+.about .footer .fab {
+    font-size: 1.5rem;
+    cursor: pointer;
+}

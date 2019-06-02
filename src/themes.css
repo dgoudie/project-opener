@@ -1,0 +1,109 @@
+.app.edge {
+    --primary: #0366d6;
+    --primary-light: #0077ff;
+    --primary-dark: #0053b3;
+    --secondary: #24292e;
+    --secondary-light: #2f363d;
+    --secondary-dark: #191D20;
+    --text-on-primary: white;
+    --text-on-secondary: white;
+}
+
+.app.meadow {
+    --primary: #509e87;
+    --primary-light: #5db89d;
+    --primary-dark: #54a189;
+    --text-on-primary: white;
+    --text-on-secondary: black;
+    --secondary: #FFFBE6;
+    --secondary-light: #ffffff;
+    --secondary-dark: #ccc8b4;
+}
+
+.app.dawn {
+    --primary: #ff8d67;
+    --primary-light: #ffbe95;
+    --primary-dark: #c85e3b;
+    --secondary: #0a1456;
+    --secondary-light: #403a83;
+    --secondary-dark: #00002d;
+    --text-on-primary: black;
+    --text-on-secondary: white;
+}
+
+.app.robot {
+    --primary: #b71c1c;
+    --primary-light: #f05545;
+    --primary-dark: #7f0000;
+    --secondary: #455a64;
+    --secondary-light: #718792;
+    --secondary-dark: #1c313a;
+    --text-on-primary: white;
+    --text-on-secondary: white;
+}
+
+.app.swamp {
+    --primary: #795548;
+    --primary-light: #a98274;
+    --primary-dark: #4b2c20;
+    --secondary: #004d40;
+    --secondary-light: #39796b;
+    --secondary-dark: #00251a;
+    --text-on-primary: white;
+    --text-on-secondary: white;
+}
+
+.app.crane {
+    --primary: #5D1049;
+    --primary-light: #830f6c;
+    --primary-dark: #4E0D3A;
+    --text-on-primary: white;
+    --text-on-secondary: white;
+    --secondary: #300823;
+    --secondary-light: #4d0a3f;
+    --secondary-dark: #25061a;
+}
+
+.app.race {
+    --primary: #344955;
+    --primary-light: #4A6572;
+    --primary-dark: #232F34;
+    --text-on-primary: white;
+    --text-on-secondary: black;
+    --secondary: #d6d9db;
+    --secondary-light: #EDF0F2;
+    --secondary-dark: #c4c7c9;
+}
+
+.app.crowd {
+    --primary: #CCF381;
+    --primary-light: #d0f191;
+    --primary-dark: #c3f16e;
+    --text-on-primary: #4831D4;
+    --text-on-secondary: white;
+    --secondary: #3a22d1;
+    --secondary-light: #5542d4;
+    --secondary-dark: #1a0791;
+}
+
+.app.hive {
+    --primary: #2F3C7E;
+    --primary-light: #394999;
+    --primary-dark: #28336b;
+    --text-on-primary: white;
+    --text-on-secondary: #222c5c;
+    --secondary: #e6d7d8;
+    --secondary-light: #ffffff;
+    --secondary-dark: #b4a6a7;
+}
+
+.app.sun {
+    --primary: #da422d;
+    --primary-light: #df5a49;
+    --primary-dark: #cc3420;
+    --text-on-primary: black;
+    --text-on-secondary: white;
+    --secondary: #1D1B1B;
+    --secondary-light: #292626;
+    --secondary-dark: #141313;
+}

@@ -1,0 +1,68 @@
+.filtered-pattern-picker ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 6px;
+    border-radius: 4px;
+    border: 1px solid var(--secondary-dark);
+    background-color: var(--secondary-light);
+    height: inherit;
+    overflow-y: auto;
+}
+
+.filtered-pattern-picker ul li {
+    border-top: 1px solid rgba(0,0,0, 0.3);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.filtered-pattern-picker ul li>.buttons {
+    display: flex;
+    margin-left: 12px;
+}
+
+.filtered-pattern-picker ul li button {
+    border: none;
+    margin: 0 2px;
+    height: 100%;
+    padding-left: 7px;
+    height: 29px;
+    width: 29px;
+    border-radius: 2px;
+}
+
+.filtered-pattern-picker ul li button.red:hover {
+    border: none;
+    background-color: var(--danger);
+}
+
+.filtered-pattern-picker ul li>span {
+    margin: 8px 0 8px 4px;
+}
+
+.filtered-pattern-picker ul li:last-child {
+    border-bottom: 1px solid rgba(0,0,0, 0.3);
+}
+.filtered-pattern-picker .standard {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.filtered-pattern-picker>.bottom-actions {
+    margin-block-start: .5em;
+    display: flex;
+}
+
+.filtered-pattern-picker>.bottom-actions>input {
+    flex: 1;
+    margin-right: 12px;
+    position: relative;
+    width: -webkit-fill-available;
+    padding: 5px 8px;
+}
+
+.filtered-pattern-picker>.bottom-actions>button i {
+    margin-right: 4px;
+    font-size: 0.7rem;
+}

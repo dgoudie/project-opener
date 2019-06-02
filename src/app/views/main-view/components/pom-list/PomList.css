@@ -1,0 +1,23 @@
+.pom-list {
+  margin: 16px 0 0;
+  padding: 0;
+  max-height: calc(100vh - 122px);
+  overflow-y: auto;
+}
+
+::-webkit-scrollbar {
+  width: 15px;
+  height: 10px;
+  background: transparent;
+  cursor: pointer;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--text-on-secondary);
+  border-radius: 10px;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 3px;
+  background-clip: padding-box;
+  min-height: 75px;
+}

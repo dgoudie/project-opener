@@ -1,0 +1,31 @@
+.text-filter input {
+    position: relative;
+    width: -webkit-fill-available;
+    font-size: 2rem;
+    padding: 5px 10px;
+  }
+  
+  .text-filter.input-wrapper {
+    position: relative;
+    margin: 16px;
+  }
+  
+  .text-filter .close-button {
+    position: absolute;
+    right: 14px;
+    top: 14.5px;
+    bottom: auto;
+    cursor: pointer;
+    width: 16px;
+    height: 16px;
+    padding: 4px;
+    border-radius: 50%;
+  }
+  
+  .text-filter .close-button:hover {
+    background-color: rgb(0, 0, 0, .2);
+  }
+
+  .text-filter .close-button.fas:before {
+    margin: 0 2px;
+  }
