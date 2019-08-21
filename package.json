@@ -23,7 +23,7 @@
     "xml2js": "^0.4.19"
   },
   "scripts": {
-    "start": "nf start",
+    "start": "cross-env BROWSER=none concurrently --kill-others \"npm run react-start\" \"npm run electron-start\"",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
@@ -44,6 +44,7 @@
     "not op_mini all"
   ],
   "devDependencies": {
+    "concurrently": "^4.1.2",
     "electron": "^4.0.5",
     "electron-builder": "^20.40.2",
     "foreman": "^3.0.1",

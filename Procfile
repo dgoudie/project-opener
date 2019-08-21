@@ -1,2 +1,2 @@
-react: set BROWSER=none&&npm run react-start
+react: npm run react-start
 electron: npm run electron-start
