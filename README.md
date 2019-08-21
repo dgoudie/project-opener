@@ -1,4 +1,4 @@
-This application is designed to help you to open maven and npm projects very quickly. The application is activated via a specified hotkey, and will allow you to search over indexed projects and open them using an IDE of your choosing. 
+This application is designed to help you to open maven and npm projects very quickly. The application is activated via a specified hotkey, ( `ctrl-shift-o` by default) and will allow you to search over indexed projects and open them using an IDE of your choosing. 
 
 Although any executable can be specified and used to launch the pom.xml or package.json file, Intellij, Webstorm, and Visual Studio Code are supported out of the box.
 
