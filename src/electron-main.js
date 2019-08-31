@@ -5,6 +5,7 @@ const {
 } = require('electron')
 const path = require('path');
 const url = require('url');
+const isDev = require('electron-is-dev')
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -22,7 +23,7 @@ if (!gotTheLock) {
       mainWindow.focus();
     }
   })
-  
+
   app.dev
   // This method will be called when Electron has finished
   // initialization and is ready to create browser windows.
@@ -63,11 +64,12 @@ function createWindow() {
   })
 
   // and load the index.html of the app.
-  const startUrl = process.env.ELECTRON_START_URL || url.format({
-    pathname: path.join(__dirname, '/../build/index.html'),
-    protocol: 'file:',
-    slashes: true
-  });
+  const startUrl =
+    isDev ? 'http://localhost:3000' : url.format({
+      pathname: path.join(__dirname, '/../build/index.html'),
+      protocol: 'file:',
+      slashes: true
+    });
   mainWindow.loadURL(startUrl);
 }
 
