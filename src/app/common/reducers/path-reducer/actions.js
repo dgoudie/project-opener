@@ -104,6 +104,7 @@ export const scanPath = (path) => async (dispatch, getState) => {
     let poms;
     try {
         poms = await findPoms(path.path, getState().filteredPatternReducer.filteredPatterns);
+        console.log(poms);
         poms = poms
             .map(pom => {
                 try {

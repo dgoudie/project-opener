@@ -1,15 +1,11 @@
 const fs = require('fs');
 const xml2jsParser = require('xml2js').parseString;
-const glob = require('glob');
+const globby = require('globby');
 
 process.on('message', async (request) => {
     try {
         const pattern = `${request.path}/**/{pom.xml,package.json}`;
-        const globPromise = (pattern, filteredPatterns) => new Promise((resolve) => glob(pattern, {ignore: filteredPatterns}, (err, files) => resolve({ err, files })));
-        const { err, files } = await globPromise(pattern, request.filteredPatterns);
-        if (err) {
-            throw new Error(err);
-        }
+        const files = await globby(pattern, {ignore: request.filteredPatterns});
         process.send(await convertFilesToPoms(files));
     } catch (error) {
         process.send({ error: error.message });

@@ -1,4 +1,4 @@
-const glob = require('glob');
+const globby = require('globby');
 
 process.on('message', async () => {
     try {
@@ -18,11 +18,7 @@ const scanForMvnIdes = async () => {
 }
 
 const scanForIntellij = async () => {
-    const globPromise = new Promise((resolve) => glob(`C:/Program Files{, (x86)}/JetBrains/IntelliJ*/bin/idea64.exe`, {}, (err, files) => resolve({ err, files })));
-    const { err, files } = await globPromise;
-    if (err) {
-        throw new Error(err);
-    }
+    const files = globby(`C:/Program Files{, (x86)}/JetBrains/IntelliJ*/bin/idea64.exe`, {});
     const intellijIdes = files.map(path => {
         const splitPath = path.split('/');
         let name = splitPath.find(pathPiece => pathPiece.toLowerCase().indexOf('intellij') >= 0);
@@ -49,11 +45,7 @@ const scanForNpmIdes = async () => {
 }
 
 const scanForVsCode = async () => {
-    const globPromise = new Promise((resolve) => glob(`C:/Program Files{, (x86)}/Microsoft VS Code/Code.exe`, {}, (err, files) => resolve({ err, files })));
-    const { err, files } = await globPromise;
-    if (err) {
-        throw new Error(err);
-    }
+    const files = globby(`C:/Program Files{, (x86)}/Microsoft VS Code/Code.exe`, {});
     const intellijIdes = files.map(path => {
         return {
             type: 'VSCODE',
@@ -66,11 +58,7 @@ const scanForVsCode = async () => {
 }
 
 const scanForWebStorm = async () => {
-    const globPromise = new Promise((resolve) => glob(`C:/Program Files{, (x86)}/JetBrains/WebStorm*/bin/webstorm64.exe`, {}, (err, files) => resolve({ err, files })));
-    const { err, files } = await globPromise;
-    if (err) {
-        throw new Error(err);
-    }
+    const files = globby(`C:/Program Files{, (x86)}/JetBrains/WebStorm*/bin/webstorm64.exe`, {});
     const intellijIdes = files.map(path => {
         const splitPath = path.split('/');
         let name = splitPath.find(pathPiece => pathPiece.toLowerCase().indexOf('webstorm') >= 0);

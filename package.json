@@ -8,7 +8,7 @@
     "copy-to-clipboard": "^3.2.0",
     "cron": "^1.7.2",
     "electron-is-dev": "^1.1.0",
-    "glob": "^7.1.5",
+    "globby": "^10.0.1",
     "hotkeys-js": "^3.7.2",
     "lodash": "^4.17.15",
     "nedb": "^1.8.0",
@@ -17,10 +17,10 @@
     "react-dom": "^16.11.0",
     "react-dropdown": "^1.6.4",
     "react-redux": "^6.0.1",
-    "react-scripts": "2.1.5",
+    "react-scripts": "^2.1.5",
     "redux": "^4.0.4",
     "redux-thunk": "^2.3.0",
-    "sort-on": "^3.0.0",
+    "sort-on": "^4.1.0",
     "wait-on": "^3.3.0",
     "xml2js": "^0.4.22"
   },
@@ -47,6 +47,7 @@
   ],
   "devDependencies": {
     "concurrently": "^4.1.2",
+    "cross-env": "^6.0.3",
     "electron": "^4.2.12",
     "electron-builder": "^20.44.4",
     "typescript": "^3.6.4"
