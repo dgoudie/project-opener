@@ -5,24 +5,24 @@
   "main": "src/electron-main.js",
   "homepage": "./",
   "dependencies": {
-    "copy-to-clipboard": "^3.0.8",
-    "cron": "^1.6.0",
+    "copy-to-clipboard": "^3.2.0",
+    "cron": "^1.7.2",
     "electron-is-dev": "^1.1.0",
-    "glob": "^7.1.3",
-    "hotkeys-js": "^3.4.4",
-    "lodash": "^4.17.13",
+    "glob": "^7.1.5",
+    "hotkeys-js": "^3.7.2",
+    "lodash": "^4.17.15",
     "nedb": "^1.8.0",
     "prop-types": "^15.7.2",
-    "react": "^16.8.3",
-    "react-dom": "^16.8.3",
+    "react": "^16.11.0",
+    "react-dom": "^16.11.0",
     "react-dropdown": "^1.6.4",
     "react-redux": "^6.0.1",
     "react-scripts": "2.1.5",
-    "redux": "^4.0.1",
+    "redux": "^4.0.4",
     "redux-thunk": "^2.3.0",
     "sort-on": "^3.0.0",
     "wait-on": "^3.3.0",
-    "xml2js": "^0.4.19"
+    "xml2js": "^0.4.22"
   },
   "scripts": {
     "start": "cross-env BROWSER=none concurrently --kill-others \"npm run react-start\" \"wait-on http://localhost:3000 && npm run electron\"",
@@ -47,9 +47,9 @@
   ],
   "devDependencies": {
     "concurrently": "^4.1.2",
-    "electron": "^4.0.5",
-    "electron-builder": "^20.40.2",
-    "typescript": "^3.3.3333"
+    "electron": "^4.2.12",
+    "electron-builder": "^20.44.4",
+    "typescript": "^3.6.4"
   },
   "build": {
     "appId": "systems.stan.pom-opener",
