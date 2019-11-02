@@ -14,7 +14,7 @@ export default class About extends Component {
                 <div className="header">
                     <img alt="Application Icon" src={icon} />
                     <h1>pom-opener</h1>
-                    <span>Version 2019.1.6</span></div>
+                    <span>Version 2019.1.7</span></div>
                 <div className="footer">
                     <span>&copy; dgoudie 2019</span>
                     <div className="fab fa-github" onClick={() => shell.openExternal('https://github.com/dgoudie/pom-opener')} title="https://github.com/dgoudie/pom-opener"/>

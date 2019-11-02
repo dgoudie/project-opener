@@ -1,6 +1,6 @@
 {
   "name": "pom-opener",
-  "version": "2019.1.6",
+  "version": "2019.1.7",
   "private": true,
   "main": "src/electron-main.js",
   "homepage": "./",
