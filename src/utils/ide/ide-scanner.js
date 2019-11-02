@@ -18,7 +18,7 @@ const scanForMvnIdes = async () => {
 }
 
 const scanForIntellij = async () => {
-    const files = globby(`C:/Program Files{, (x86)}/JetBrains/IntelliJ*/bin/idea64.exe`, {});
+    const files = await globby(`C:/Program Files{, (x86)}/JetBrains/IntelliJ*/bin/idea64.exe`, {});
     const intellijIdes = files.map(path => {
         const splitPath = path.split('/');
         let name = splitPath.find(pathPiece => pathPiece.toLowerCase().indexOf('intellij') >= 0);
@@ -45,7 +45,7 @@ const scanForNpmIdes = async () => {
 }
 
 const scanForVsCode = async () => {
-    const files = globby(`C:/Program Files{, (x86)}/Microsoft VS Code/Code.exe`, {});
+    const files = await globby(`C:/Program Files{, (x86)}/Microsoft VS Code/Code.exe`, {});
     const intellijIdes = files.map(path => {
         return {
             type: 'VSCODE',
@@ -58,7 +58,7 @@ const scanForVsCode = async () => {
 }
 
 const scanForWebStorm = async () => {
-    const files = globby(`C:/Program Files{, (x86)}/JetBrains/WebStorm*/bin/webstorm64.exe`, {});
+    const files = await globby(`C:/Program Files{, (x86)}/JetBrains/WebStorm*/bin/webstorm64.exe`, {});
     const intellijIdes = files.map(path => {
         const splitPath = path.split('/');
         let name = splitPath.find(pathPiece => pathPiece.toLowerCase().indexOf('webstorm') >= 0);
