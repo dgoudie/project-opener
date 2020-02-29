@@ -1,0 +1,90 @@
+.path-picker {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.path-picker ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 6px;
+    border-radius: 4px;
+    border: 1px solid var(--secondary-dark);
+    background-color: var(--secondary-light);
+    height: inherit;
+    overflow-y: auto;
+    margin-block-end: .5em;
+    width: -webkit-fill-available;
+}
+
+.path-picker ul li {
+    border-top: 1px solid rgba(0,0,0, 0.3);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.path-picker ul li:last-child {
+    border-bottom: 1px solid rgba(0,0,0, 0.3);
+}
+
+.path-picker ul li>span {
+    margin: 8px 0 8px 4px;
+}
+
+.path-picker ul li>.buttons {
+    display: flex;
+    margin-left: 12px;
+}
+
+.path-picker ul li button {
+    border: none;
+    margin: 0 2px;
+    height: 100%;
+    padding-left: 7px;
+    height: 29px;
+    width: 29px;
+    border-radius: 2px;
+    background: transparent;
+}
+
+.path-picker ul li button.scanning{
+    background-color: transparent;
+}
+
+
+.path-picker ul li button.scanning>.fas {
+    animation: spin 750ms infinite linear;
+    opacity: 0.5;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.path-picker ul li button.blue:not(:disabled):hover {
+    border: none;
+    background-color: var(--primary);
+    color: var(--text-on-primary);
+}
+
+.path-picker ul li button.red:not(:disabled):hover {
+    border: none;
+    background-color: var(--danger);
+}
+
+.path-picker button {
+    display: flex;
+    align-items: center;
+    height: 30px;
+}
+
+.path-picker>button i {
+    margin-right: 4px;
+    font-size: 0.7rem;
+}

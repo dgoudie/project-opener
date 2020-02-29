@@ -1,46 +1,73 @@
 {
-    "name": "project-opener",
-    "version": "2020.2.1",
-    "description": "",
-    "main": "index.js",
-    "scripts": {
-        "start": "concurrently \"npm run start:renderer\" \"wait-on http://localhost:8080 && npm run start:electron\"",
-        "start:electron": "cd src/main && tsc-watch --onSuccess \"npm run start:electron-process\"",
-        "start:electron-process": "electron dist/main/app.js",
-        "start:renderer": "cd src/renderer && webpack-dev-server",
-        "build": "rimraf dist && npm run build:electron && npm run build:renderer",
-        "build:electron": "cd src/main && tsc",
-        "build:renderer": "cd src/renderer && webpack --mode production"
+  "name": "pom-opener",
+  "version": "2019.1.7",
+  "private": true,
+  "main": "src/electron-main.js",
+  "homepage": "./",
+  "dependencies": {
+    "copy-to-clipboard": "^3.2.0",
+    "cron": "^1.7.2",
+    "electron-is-dev": "^1.1.0",
+    "globby": "^10.0.1",
+    "hotkeys-js": "^3.7.2",
+    "lodash": "^4.17.15",
+    "nedb": "^1.8.0",
+    "prop-types": "^15.7.2",
+    "react": "^16.11.0",
+    "react-dom": "^16.11.0",
+    "react-dropdown": "^1.6.4",
+    "react-redux": "^6.0.1",
+    "react-scripts": "^2.1.5",
+    "redux": "^4.0.4",
+    "redux-thunk": "^2.3.0",
+    "sort-on": "^4.1.0",
+    "wait-on": "^3.3.0",
+    "xml2js": "^0.4.22"
+  },
+  "scripts": {
+    "start": "cross-env BROWSER=none concurrently --kill-others \"npm run react-start\" \"wait-on http://localhost:3000 && npm run electron\"",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject",
+    "electron": "electron . --no-hide-on-blur",
+    "electron-start": "node src/electron-wait-react",
+    "react-start": "react-scripts start",
+    "pack": "build --dir",
+    "dist": "npm run build && build",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ],
+  "devDependencies": {
+    "concurrently": "^4.1.2",
+    "cross-env": "^6.0.3",
+    "electron": "^4.2.12",
+    "electron-builder": "^20.44.4",
+    "typescript": "^3.6.4"
+  },
+  "build": {
+    "appId": "systems.stan.pom-opener",
+    "win": {
+      "target": "nsis",
+      "icon": "src/app/assets/icon.ico"
     },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/dgoudie/project-opener.git"
+    "nsis": {
+      "oneClick": true,
+      "perMachine": true,
+      "installerHeaderIcon": "src/app/assets/icon.ico",
+      "installerIcon": "src/app/assets/icon.ico",
+      "createDesktopShortcut": false
     },
-    "author": "",
-    "license": "ISC",
-    "bugs": {
-        "url": "https://github.com/dgoudie/project-opener/issues"
-    },
-    "homepage": "https://github.com/dgoudie/project-opener#readme",
-    "devDependencies": {
-        "@types/electron": "^1.6.10",
-        "@types/node": "^12",
-        "@types/react-dom": "^16.9.5",
-        "concurrently": "^5.1.0",
-        "copy-webpack-plugin": "^5.1.1",
-        "electron": "^8.0.2",
-        "electron-is-dev": "^1.1.0",
-        "mini-css-extract-plugin": "^0.9.0",
-        "react": "^16.13.0",
-        "react-dom": "^16.13.0",
-        "rimraf": "^3.0.2",
-        "ts-loader": "^6.2.1",
-        "tsc-watch": "^4.2.2",
-        "typescript": "^3.8.3",
-        "wait-on": "^4.0.1",
-        "webpack": "^4.41.6",
-        "webpack-bundle-analyzer": "^3.6.0",
-        "webpack-cli": "^3.3.11",
-        "webpack-dev-server": "^3.10.3"
+    "extends": null,
+    "directories": {
+      "buildResources": "public"
     }
+  }
 }
