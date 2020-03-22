@@ -1,73 +1,70 @@
 {
-  "name": "pom-opener",
-  "version": "2019.1.7",
-  "private": true,
-  "main": "src/electron-main.js",
-  "homepage": "./",
-  "dependencies": {
-    "copy-to-clipboard": "^3.2.0",
-    "cron": "^1.7.2",
-    "electron-is-dev": "^1.1.0",
-    "globby": "^10.0.1",
-    "hotkeys-js": "^3.7.2",
-    "lodash": "^4.17.15",
-    "nedb": "^1.8.0",
-    "prop-types": "^15.7.2",
-    "react": "^16.11.0",
-    "react-dom": "^16.11.0",
-    "react-dropdown": "^1.6.4",
-    "react-redux": "^6.0.1",
-    "react-scripts": "^2.1.5",
-    "redux": "^4.0.4",
-    "redux-thunk": "^2.3.0",
-    "sort-on": "^4.1.0",
-    "wait-on": "^3.3.0",
-    "xml2js": "^0.4.22"
-  },
-  "scripts": {
-    "start": "cross-env BROWSER=none concurrently --kill-others \"npm run react-start\" \"wait-on http://localhost:3000 && npm run electron\"",
-    "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject",
-    "electron": "electron . --no-hide-on-blur",
-    "electron-start": "node src/electron-wait-react",
-    "react-start": "react-scripts start",
-    "pack": "build --dir",
-    "dist": "npm run build && build",
-    "postinstall": "electron-builder install-app-deps"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not ie <= 11",
-    "not op_mini all"
-  ],
-  "devDependencies": {
-    "concurrently": "^4.1.2",
-    "cross-env": "^6.0.3",
-    "electron": "^4.2.12",
-    "electron-builder": "^20.44.4",
-    "typescript": "^3.6.4"
-  },
-  "build": {
-    "appId": "systems.stan.pom-opener",
-    "win": {
-      "target": "nsis",
-      "icon": "src/app/assets/icon.ico"
+    "name": "pom-opener",
+    "version": "2019.1.7",
+    "private": true,
+    "main": "src/electron-main.js",
+    "homepage": "./",
+    "dependencies": {
+        "copy-to-clipboard": "^3.3.1",
+        "cron": "^1.8.2",
+        "electron-is-dev": "^1.1.0",
+        "globby": "^10.0.1",
+        "hotkeys-js": "^3.7.3",
+        "lodash": "^4.17.15",
+        "nedb": "^1.8.0",
+        "prop-types": "^15.7.2",
+        "react": "^16.13.1",
+        "react-dom": "^16.13.1",
+        "react-dropdown": "^1.7.0",
+        "react-redux": "^7.2.0",
+        "react-scripts": "^3.4.1",
+        "redux": "^4.0.5",
+        "redux-thunk": "^2.3.0",
+        "sort-on": "^4.1.0",
+        "wait-on": "^4.0.1",
+        "xml2js": "^0.4.23",
+        "concurrently": "^5.1.0",
+        "cross-env": "^7.0.2",
+        "electron": "^8.1.1",
+        "electron-builder": "^22.4.1",
+        "typescript": "^3.8.3"
     },
-    "nsis": {
-      "oneClick": true,
-      "perMachine": true,
-      "installerHeaderIcon": "src/app/assets/icon.ico",
-      "installerIcon": "src/app/assets/icon.ico",
-      "createDesktopShortcut": false
+    "scripts": {
+        "start": "cross-env BROWSER=none concurrently --kill-others \"npm run react-start\" \"wait-on http://localhost:3000 && npm run electron\"",
+        "build": "react-scripts build",
+        "test": "react-scripts test --env=jsdom",
+        "eject": "react-scripts eject",
+        "electron": "electron . --no-hide-on-blur",
+        "react-start": "react-scripts start",
+        "pack": "build --dir",
+        "dist": "npm run build && build",
+        "postinstall": "electron-builder install-app-deps"
     },
-    "extends": null,
-    "directories": {
-      "buildResources": "public"
+    "eslintConfig": {
+        "extends": "react-app"
+    },
+    "browserslist": [
+        ">0.2%",
+        "not dead",
+        "not ie <= 11",
+        "not op_mini all"
+    ],
+    "build": {
+        "appId": "systems.stan.pom-opener",
+        "win": {
+            "target": "nsis",
+            "icon": "src/app/assets/icon.ico"
+        },
+        "nsis": {
+            "oneClick": true,
+            "perMachine": true,
+            "installerHeaderIcon": "src/app/assets/icon.ico",
+            "installerIcon": "src/app/assets/icon.ico",
+            "createDesktopShortcut": false
+        },
+        "extends": null,
+        "directories": {
+            "buildResources": "public"
+        }
     }
-  }
 }
