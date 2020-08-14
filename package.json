@@ -1,9 +1,10 @@
 {
-    "name": "project-opener-v3",
+    "name": "project-opener",
     "productName": "project-opener",
-    "version": "1.0.0",
+    "version": "2020.1.0",
     "description": "My Electron application description",
     "main": ".webpack/main",
+    "private": true,
     "scripts": {
         "start": "cross-env IS_DEVELOPMENT=1 electron-forge start",
         "package": "electron-forge package",
@@ -21,7 +22,7 @@
         "forge": "forge.config.js"
     },
     "repository": {
-        "url": "https://github.com/dgoudie/project-opener-v3"
+        "url": "https://github.com/dgoudie/project-opener"
     },
     "devDependencies": {
         "@electron-forge/cli": "6.0.0-beta.52",
