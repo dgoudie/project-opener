@@ -2,7 +2,7 @@
     "name": "project-opener",
     "productName": "project-opener",
     "version": "2020.1.0",
-    "description": "My Electron application description",
+    "description": "Tool used to launch development projects quickly.",
     "main": ".webpack/main",
     "private": true,
     "scripts": {
@@ -46,6 +46,7 @@
         "eslint": "^6.8.0",
         "eslint-plugin-import": "^2.20.0",
         "file-loader": "^6.0.0",
+        "file-url": "^3.0.0",
         "fork-ts-checker-webpack-plugin": "^3.1.1",
         "mini-css-extract-plugin": "^0.9.0",
         "node-loader": "^0.6.0",
@@ -57,7 +58,6 @@
     },
     "dependencies": {
         "@fluentui/react": "^7.127.1",
-        "@primer/css": "^15.1.0",
         "@types/react": "^16.9.46",
         "@types/react-dom": "^16.9.8",
         "@uifabric/fluent-theme": "^7.1.128",
