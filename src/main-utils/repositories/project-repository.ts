@@ -220,30 +220,21 @@ const buildQuery = (text: string, childProjectIds: Set<string>) => {
 const getParentChildMap = (projects: Project[]) => {
     const pathSegmentIdMap = new Map<string, Project>();
 
-    const segmentPath = (project: Project) =>
-        project.path
-            .replace(project.inside, '')
-            .split(/[\/\\]/)
-            .filter(
-                (segment) =>
-                    !!segment && segment !== project.type.projectFileName
-            );
-
     projects.forEach((project) => {
         const segments = segmentPath(project);
-        pathSegmentIdMap.set(segments.join('|'), project);
+        pathSegmentIdMap.set(JSON.stringify(segments), project);
     });
     const parentChildrenMap = new Map<string, string[]>();
     projects.forEach((project) => {
         const segments = segmentPath(project);
-        const fullJoinedPath = segments.join('|');
+        const fullJoinedPath = JSON.stringify(segments);
         let allParents: Project[] = [];
         for (let i = 0; i < segments.length; i++) {
             let joinedSegments: string[] = [];
             for (let j = 0; j - 1 < i; j++) {
                 joinedSegments = [...joinedSegments, segments[j]];
             }
-            const joinedPath = joinedSegments.join('|');
+            const joinedPath = JSON.stringify(joinedSegments);
             if (
                 fullJoinedPath !== joinedPath &&
                 pathSegmentIdMap.has(joinedPath)
@@ -265,6 +256,14 @@ const getParentChildMap = (projects: Project[]) => {
     });
     return parentChildrenMap;
 };
+
+const segmentPath = (project: Project) =>
+    project.path
+        .replace(project.inside, '')
+        .split(/[\/\\]/)
+        .filter(
+            (segment) => !!segment && segment !== project.type.projectFileName
+        );
 
 export function compact() {
     db.persistence.compactDatafile();
