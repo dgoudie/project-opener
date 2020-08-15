@@ -16,6 +16,7 @@ import {
 import React, { Component } from 'react';
 import { openDirectory, openProject } from 'src/utils/open';
 
+import ListItemModules from 'src/components/ListItemModules';
 import { RootState } from 'src/redux/store/types';
 import { appActions } from 'src/redux/features/app';
 import { connect } from 'react-redux';
@@ -39,8 +40,8 @@ class ListItem extends Component<Props, State> {
         expandedToShowChildren: false,
     };
     public render() {
-        const { project, cursor, index } = this.props;
-        const classNames = buildClasses(this.props.theme, cursor === index);
+        const { project, cursor, index, theme } = this.props;
+        const classNames = buildClasses(theme, cursor === index);
         if (project === undefined || index === undefined) {
             return null;
         }
@@ -76,9 +77,16 @@ class ListItem extends Component<Props, State> {
                         {project.path}
                     </Text>
                 </div>
+                {!!project.children.length && (
+                    <ListItemModules
+                        theme={theme}
+                        selected={cursor === index}
+                        childrenIds={project.children}
+                    />
+                )}
                 <TooltipHost
                     content='Project Options'
-                    directionalHint={DirectionalHint.leftCenter}
+                    directionalHint={DirectionalHint.bottomRightEdge}
                     styles={{
                         root: { display: 'inline-block', marginRight: 8 },
                     }}
@@ -123,27 +131,6 @@ class ListItem extends Component<Props, State> {
         return {
             onMenuDismissed: this.props.onContextMenuClosed,
             items: [
-                {
-                    key: 'maven',
-                    itemType: ContextualMenuItemType.Section,
-                    sectionProps: {
-                        title: 'Maven Multi-Module Project',
-                        items: [
-                            {
-                                key: 'expandToggle',
-                                text: 'Show Maven Modules',
-                                iconProps: {
-                                    iconName: 'OEM',
-                                },
-                                onClick: () =>
-                                    this.setState({
-                                        expandedToShowChildren: !this.state
-                                            .expandedToShowChildren,
-                                    }),
-                            },
-                        ],
-                    },
-                },
                 {
                     key: 'tools',
                     itemType: ContextualMenuItemType.Section,

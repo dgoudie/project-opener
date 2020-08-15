@@ -45,6 +45,7 @@ export interface Project {
     clickCount: number;
     inside: string;
     type: ProjectType;
+    children: string[];
 }
 
 type AppExceptionType = 'ERROR' | 'WARNING';

@@ -2,13 +2,16 @@ import { Subject, forkJoin, of, timer } from 'rxjs';
 import { catchError, debounce, map, switchMap, tap } from 'rxjs/operators';
 import {
     countAllProjects as countAllProjectsFromRepository,
-    getAllProjects,
+    getAllProjectsWithoutParent,
     getProjectById,
     incrementClickCount,
-    searchProjects,
+    removeProjectsByPath as removeProjectsByPathFromRepostitory,
+    searchProjectsWithoutParent,
+    setChildren as setChildrenRepository,
 } from 'src/main-utils/repositories/project-repository';
 import { dirname, normalize } from 'path';
 
+import { Project } from 'src/types';
 import { getIdeByProjectType } from 'src/main-utils/services/settings-service';
 import { spawn } from 'child_process';
 
@@ -28,9 +31,9 @@ const filterTextChangeSubscription = filterTextChangeSubject
                 : of(event)
         ),
         switchMap(({ text, event, returnEventName }) => {
-            let obs$ = getAllProjects();
+            let obs$ = getAllProjectsWithoutParent();
             if (!!text) {
-                obs$ = searchProjects(text);
+                obs$ = searchProjectsWithoutParent(text);
             }
             return obs$.pipe(
                 map((projects) => ({ projects, event, returnEventName }))
@@ -79,6 +82,12 @@ export const openProject = (id: string) => {
     ]);
 };
 
+export const removeProjectsByPath = (path: string) => {
+    return removeProjectsByPathFromRepostitory(path).pipe(
+        switchMap(() => setChildren())
+    );
+};
+
 export const openDirectory = (id: string) => {
     return getProjectById(id).pipe(
         tap((project) => {
@@ -92,6 +101,10 @@ export const openDirectory = (id: string) => {
             });
         })
     );
+};
+
+export const setChildren = () => {
+    return setChildrenRepository();
 };
 
 export const filterTextChange = (

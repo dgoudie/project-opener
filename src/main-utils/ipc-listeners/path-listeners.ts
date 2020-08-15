@@ -5,9 +5,8 @@ import {
 
 import { AppException } from 'src/types';
 import { ipcMain } from 'electron';
-import { removeProjectsByPath } from 'src/main-utils/repositories/project-repository';
+import { removeProjectsByPath } from 'src/main-utils/services/project-service';
 import { reportException } from 'src/main-utils/services/error-service';
-import { tap } from 'rxjs/operators';
 
 const setupListeners = () => {
     ipcMain.on('requestSelectedDirectory', (event) => {

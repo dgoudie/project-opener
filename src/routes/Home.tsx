@@ -140,7 +140,9 @@ class Home extends Component<Props, State> {
     private _filteredProjects = (
         _event: Electron.IpcRendererEvent,
         filteredProjects: Project[]
-    ) => this.setState({ filteredProjects, cursor: 0 });
+    ) => {
+        this.setState({ filteredProjects, cursor: 0 });
+    };
 
     private _projectCount = (
         _event: Electron.IpcRendererEvent,

@@ -1,5 +1,13 @@
 import { AppException, Project, projectTypes } from 'src/types';
-import { EMPTY, Observable, forkJoin, from, of, throwError } from 'rxjs';
+import {
+    EMPTY,
+    Observable,
+    concat,
+    forkJoin,
+    from,
+    of,
+    throwError,
+} from 'rxjs';
 import {
     catchError,
     filter,
@@ -22,6 +30,7 @@ import { normalize } from 'path';
 import { parseString } from 'xml2js';
 import { readFile } from 'fs';
 import { reportException } from 'src/main-utils/services/error-service';
+import { setChildren } from 'src/main-utils/services/project-service';
 
 export function promptForDirectory(): Observable<string> {
     return from(
@@ -56,10 +65,13 @@ export function scanPathAndUpdateDatabase(
             )
         ),
         switchMap(([addedProjects, removedProjects]) =>
-            forkJoin([
-                insertProjects(addedProjects),
-                removeProjects(removedProjects),
-            ])
+            concat(
+                forkJoin([
+                    insertProjects(addedProjects),
+                    removeProjects(removedProjects),
+                ]),
+                setChildren()
+            )
         )
     );
 }
@@ -100,6 +112,7 @@ const convertFilesToProjects = (
                                     clickCount: 0,
                                     inside,
                                     type: matchingProjectType,
+                                    children: [],
                                 }))
                             );
                         case 'NPM':
@@ -115,6 +128,7 @@ const convertFilesToProjects = (
                                         clickCount: 0,
                                         inside,
                                         type: matchingProjectType,
+                                        children: [],
                                     })
                                 )
                             );
