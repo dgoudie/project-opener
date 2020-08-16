@@ -58,7 +58,9 @@ function ExceptionViewer({ exceptions, dismissException, theme }: Props) {
             }}
         >
             <p className={classes.message}>{exception?.message}</p>
-            <pre className={classes.stack}>{exception?.stack}</pre>
+            {!!exception?.stack && (
+                <pre className={classes.stack}>{exception?.stack}</pre>
+            )}
             <DialogFooter>
                 <PrimaryButton
                     text='Dismiss'

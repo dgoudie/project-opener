@@ -32,6 +32,7 @@ export const initListeners = (store: Store) => {
     });
     ipcRenderer.on('exception', (_event, exception: AppException) => {
         store.dispatch(addException(exception));
+        store.dispatch(setWindowVisible(true));
     });
 };
 export const requestSettings = () => {

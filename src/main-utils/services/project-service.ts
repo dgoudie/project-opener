@@ -1,4 +1,4 @@
-import { Subject, forkJoin, of, timer } from 'rxjs';
+import { EMPTY, Subject, forkJoin, of, throwError, timer } from 'rxjs';
 import { catchError, debounce, map, switchMap, tap } from 'rxjs/operators';
 import {
     countAllProjectsWithoutParent as countAllProjectsWithoutParentFromRepository,
@@ -12,7 +12,11 @@ import {
 } from 'src/main-utils/repositories/project-repository';
 import { dirname, normalize } from 'path';
 
+import { AppException } from 'src/types';
+import { IpcMainEvent } from 'electron';
+import { checkIfIdeExists } from 'src/main-utils/services/ide-service';
 import { getIdeByProjectType } from 'src/main-utils/services/settings-service';
+import { reportException } from 'src/main-utils/services/error-service';
 import { spawn } from 'child_process';
 
 const WAIT_INTERVAL = 150;
@@ -51,33 +55,56 @@ export const countAllProjectsWithoutParent = () => {
 export const getProjectsByIdsAndSearchText = (ids: string[], text: string) =>
     getProjectsByIdsAndSearchTextFromRepository(ids, text);
 
-export const openProject = (id: string) => {
-    return forkJoin([
-        incrementClickCount(id),
-        getProjectById(id).pipe(
-            switchMap((project) =>
-                getIdeByProjectType(project.type).pipe(
-                    map((ide) => ({ ide, project }))
+export const openProject = (id: string, event: IpcMainEvent) => {
+    return getProjectById(id).pipe(
+        switchMap((project) =>
+            getIdeByProjectType(project.type).pipe(
+                switchMap((ide) => {
+                    if (!ide) {
+                        reportException(event, {
+                            message: `An IDE for ${project.type.commonName} projects has not been specified. Go to Settings > IDEs to set one up.`,
+                            type: 'WARNING',
+                        });
+                        return EMPTY;
+                    }
+                    return of({ ide, project });
+                }),
+                switchMap(({ ide, project }) =>
+                    checkIfIdeExists(ide).pipe(
+                        switchMap((exists) => {
+                            if (!exists) {
+                                reportException(event, {
+                                    message: `The IDE for ${project.type.commonName} projects could not be found.`,
+                                    type: 'WARNING',
+                                });
+                                return EMPTY;
+                            }
+                            return of({ ide, project });
+                        })
+                    )
                 )
-            ),
-            tap(({ ide, project }) => {
-                if (!ide || !project) {
-                    return;
-                }
-                const ideExecutable = normalize(ide.path);
-                const fileDirectory = normalize(dirname(project.path));
-                const evaluatedArgs = ide.args.map((arg) =>
-                    arg
-                        .replace(/{{file}}/g, project.path)
-                        .replace(/{{directory}}/g, fileDirectory)
-                );
-                spawn(ideExecutable, evaluatedArgs, {
-                    detached: true,
-                    stdio: ['ignore', 'ignore', 'ignore'],
-                });
-            })
+            )
         ),
-    ]);
+        switchMap(({ ide, project }) =>
+            incrementClickCount(id).pipe(map(() => ({ ide, project })))
+        ),
+        tap(({ ide, project }) => {
+            if (!ide || !project) {
+                return;
+            }
+            const ideExecutable = normalize(ide.path);
+            const fileDirectory = normalize(dirname(project.path));
+            const evaluatedArgs = ide.args.map((arg) =>
+                arg
+                    .replace(/{{file}}/g, project.path)
+                    .replace(/{{directory}}/g, fileDirectory)
+            );
+            spawn(ideExecutable, evaluatedArgs, {
+                detached: true,
+                stdio: ['ignore', 'ignore', 'ignore'],
+            });
+        })
+    );
 };
 
 export const removeProjectsByPath = (path: string) => {

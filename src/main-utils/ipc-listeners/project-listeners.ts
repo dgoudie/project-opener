@@ -33,7 +33,7 @@ const setupListeners = () => {
             });
     });
     ipcMain.on('openProject', (event, projectId) => {
-        openProject(projectId).subscribe(null, (err: Error) =>
+        openProject(projectId, event).subscribe(null, (err: Error) =>
             reportException(event, new AppException(err.message, err.stack))
         );
     });

@@ -3,6 +3,7 @@ import { concatMap, filter, map, reduce, tap } from 'rxjs/operators';
 import electron, { dialog } from 'electron';
 
 import { Ide } from 'src/types';
+import { exists } from 'fs';
 import globby from 'globby';
 import unixify from 'unixify';
 
@@ -126,4 +127,13 @@ const findWebStormIdes: () => Observable<Ide> = () => {
             name: 'WebStorm',
         }))
     );
+};
+
+export const checkIfIdeExists = (ide: Ide) => {
+    return new Observable<boolean>((o) => {
+        exists(ide.path, (exists) => {
+            o.next(exists);
+            o.complete();
+        });
+    });
 };
