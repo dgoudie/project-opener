@@ -56,8 +56,8 @@ class ListItem extends Component<Props, State> {
             >
                 <Image
                     shouldFadeIn={false}
-                    height={12}
-                    width={32}
+                    height={24}
+                    width={24}
                     imageFit={ImageFit.contain}
                     title={`${project.type.commonName} Project`}
                     alt={project.type.commonName}

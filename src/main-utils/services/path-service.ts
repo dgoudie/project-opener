@@ -1,13 +1,5 @@
 import { AppException, Project, projectTypes } from 'src/types';
-import {
-    EMPTY,
-    Observable,
-    concat,
-    forkJoin,
-    from,
-    of,
-    throwError,
-} from 'rxjs';
+import { EMPTY, Observable, concat, forkJoin, from, of } from 'rxjs';
 import {
     catchError,
     filter,
@@ -31,6 +23,7 @@ import { parseString } from 'xml2js';
 import { readFile } from 'fs';
 import { reportException } from 'src/main-utils/services/error-service';
 import { setChildren } from 'src/main-utils/services/project-service';
+import toml from 'toml';
 
 export function promptForDirectory(): Observable<string> {
     return from(
@@ -84,6 +77,7 @@ const findFiles = (
         .map((pt) => pt.projectFileName)
         .join(',')}}`.replace(/\\/g, '/');
     const pathPromise = globby(pattern, {
+        caseSensitiveMatch: false,
         ignore: filteredPatterns,
         suppressErrors: true,
         onlyFiles: true,
@@ -101,7 +95,7 @@ const convertFilesToProjects = (
             read(path, event).pipe(
                 mergeMap((fileContents) => {
                     const matchingProjectType = projectTypes.find((pt) =>
-                        path.includes(pt.projectFileName)
+                        path.toLowerCase().includes(pt.projectFileName)
                     );
                     switch (matchingProjectType.key) {
                         case 'MAVEN':
@@ -125,6 +119,23 @@ const convertFilesToProjects = (
                                     (packageJsonFile) => ({
                                         path,
                                         name: packageJsonFile.name,
+                                        clickCount: 0,
+                                        inside,
+                                        type: matchingProjectType,
+                                        children: [],
+                                    })
+                                )
+                            );
+                        case 'RUST':
+                            return parseCargoTomlFile(
+                                fileContents,
+                                path,
+                                event
+                            ).pipe(
+                                map<CargoTomlFile, Project>(
+                                    (cargoTomlFile) => ({
+                                        path,
+                                        name: cargoTomlFile.package.name,
                                         clickCount: 0,
                                         inside,
                                         type: matchingProjectType,
@@ -211,6 +222,30 @@ const parsePackageJsonFile = (
     }
 };
 
+const parseCargoTomlFile = (
+    data: string,
+    path: string,
+    event: Electron.IpcMainEvent
+): Observable<CargoTomlFile> => {
+    try {
+        const cargoTomlFile: CargoTomlFile = toml.parse(data);
+        if (!cargoTomlFile?.package?.name) {
+            throw new Error();
+        }
+        return of(cargoTomlFile);
+    } catch (err) {
+        reportException(
+            event,
+            new AppException(
+                `An error occurred when attempting to parse the file ${path}: ${err.message}`,
+                err.stack,
+                'WARNING'
+            )
+        );
+        return EMPTY;
+    }
+};
+
 const getAddedAndRemovedProjects = (
     oldProjects: Project[],
     newProjects: Project[]
@@ -237,4 +272,8 @@ interface PomFile {
 
 interface PackageJsonFile {
     name: string;
+}
+
+interface CargoTomlFile {
+    package: { name: string };
 }

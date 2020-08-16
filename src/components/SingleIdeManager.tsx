@@ -152,9 +152,9 @@ const buildClasses = (theme: ITheme | null) => {
             alignItems: 'center',
         },
         simTypeImage: {
-            width: 32,
-            maxHeight: 14,
-            height: 14,
+            width: 24,
+            maxHeight: 24,
+            height: 24,
             marginRight: 8,
         },
         simTypeName: {

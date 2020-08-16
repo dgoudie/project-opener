@@ -23,6 +23,7 @@ export type ProjectType = {
 export const projectTypes: ProjectType[] = [
     { key: 'MAVEN', commonName: 'Maven', projectFileName: 'pom.xml' },
     { key: 'NPM', commonName: 'NPM', projectFileName: 'package.json' },
+    { key: 'RUST', commonName: 'Rust', projectFileName: 'cargo.toml' },
 ];
 
 export interface CurrentlyScanningPath {
