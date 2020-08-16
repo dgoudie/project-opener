@@ -5,18 +5,26 @@ import {
     DialogType,
     DirectionalHint,
     FocusTrapCallout,
+    FontSizes,
+    FontWeights,
     IButton,
     IDialogContentProps,
+    ITextField,
     ITooltipHost,
     IconButton,
     Text,
+    TextField,
     TooltipHost,
     mergeStyleSets,
 } from '@fluentui/react';
 import { IpcRendererEvent, ipcRenderer } from 'electron';
 import React, { Component } from 'react';
+import { Subject, Subscription, of, timer } from 'rxjs';
+import { debounce, map } from 'rxjs/operators';
 
 import ProjectList from 'src/components/ProjectList';
+
+const WAIT_INTERVAL = 150;
 
 interface Props {
     theme: AppTheme;
@@ -28,17 +36,22 @@ interface Props {
 interface State {
     dialogOpen: boolean;
     projects: Project[];
+    filterText: string;
 }
 
 const dialogContentProps: IDialogContentProps = {
     type: DialogType.largeHeader,
 };
 export default class ListItemModules extends Component<Props, State> {
+    private primaryInputSubject = new Subject<string>();
+    private primaryInputSubscription: Subscription;
     state: State = {
         dialogOpen: false,
         projects: [],
+        filterText: '',
     };
     rootRef = React.createRef<HTMLDivElement>();
+    inputRef = React.createRef<ITextField>();
     render() {
         const classes = buildClasses(
             this.props.theme,
@@ -70,8 +83,20 @@ export default class ListItemModules extends Component<Props, State> {
                         ...dialogContentProps,
                         title: (
                             <div className={classes.dialogHeader}>
-                                <Text>Project Modules</Text>
+                                <TextField
+                                    componentRef={this.inputRef}
+                                    className={classes.dialogHeaderInput}
+                                    onChange={(event: any) =>
+                                        this.primaryInputSubject.next(
+                                            event.target.value
+                                        )
+                                    }
+                                    underlined
+                                    type='search'
+                                    label={`Search ${this.props.childrenIds.length} modules for:`}
+                                />
                                 <IconButton
+                                    className={classes.dialogHeaderCloseButton}
                                     iconProps={{ iconName: 'Cancel' }}
                                     onClick={() =>
                                         this.setState({ dialogOpen: false })
@@ -91,22 +116,28 @@ export default class ListItemModules extends Component<Props, State> {
             </div>
         );
     }
-    private _onOpen = (event: React.MouseEvent<IconButton>) => {
-        event.stopPropagation();
-        this.setState({ dialogOpen: true });
-    };
-
-    private _onClose = () => {
-        this.setState({ dialogOpen: false });
-        this.props.onDialogClosed && this.props.onDialogClosed();
-    };
 
     componentDidMount() {
         ipcRenderer.addListener(
             'getProjectsByIdsResult',
             this._getProjectsByIdsResult
         );
-        ipcRenderer.send('getProjectsByIds', this.props.childrenIds);
+        this._requestProjects();
+        this.primaryInputSubscription = this.primaryInputSubject
+            .pipe(
+                debounce((text) =>
+                    !!text
+                        ? timer(WAIT_INTERVAL).pipe(map(() => text))
+                        : of(text)
+                )
+            )
+            .subscribe((filterText) => this.setState({ filterText }));
+    }
+
+    componentDidUpdate(_oldProps: Props, oldState: State) {
+        if (this.state.filterText !== oldState.filterText) {
+            this._requestProjects();
+        }
     }
 
     componentWillUnmount() {
@@ -114,6 +145,30 @@ export default class ListItemModules extends Component<Props, State> {
             'getProjectsByIdsResult',
             this._getProjectsByIdsResult
         );
+        this.primaryInputSubscription?.unsubscribe();
+    }
+
+    private _requestProjects() {
+        ipcRenderer.send(
+            'getProjectsByIds',
+            this.props.childrenIds,
+            this.state.filterText
+        );
+    }
+
+    private _onOpen = (event: React.MouseEvent<IconButton>) => {
+        event.stopPropagation();
+        this.setState({ dialogOpen: true });
+        this._focusInput();
+    };
+
+    private _onClose = () => {
+        this.setState({ dialogOpen: false });
+        this.props.onDialogClosed && this.props.onDialogClosed();
+    };
+
+    private _focusInput() {
+        setTimeout(() => this.inputRef.current.focus());
     }
 
     private _getProjectsByIdsResult = (
@@ -156,7 +211,7 @@ const buildClasses = (
                     padding: 0,
                 },
                 '.ms-Dialog-title': {
-                    padding: '12px 16px',
+                    padding: '8px 8px',
                 },
             },
         },
@@ -165,6 +220,12 @@ const buildClasses = (
             justifyContent: 'space-between',
             alignItems: 'center',
             color: theme.semanticColors.bodyText,
+        },
+        dialogHeaderInput: {
+            flex: 1,
+        },
+        dialogHeaderCloseButton: {
+            marginLeft: 16,
         },
     });
 };

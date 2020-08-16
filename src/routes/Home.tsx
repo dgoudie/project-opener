@@ -120,7 +120,7 @@ class Home extends Component<Props, State> {
     };
 
     private _requestProjectCount = () => {
-        ipcRenderer.send('requestProjectCount');
+        ipcRenderer.send('countAllProjectsWithoutParent');
     };
 
     private _requestFilteredProjects = (filterText: string) => {
@@ -129,13 +129,19 @@ class Home extends Component<Props, State> {
 
     private _setupFilteredProjectsListener = () => {
         ipcRenderer.on('filteredProjects', this._filteredProjects);
-        ipcRenderer.on('projectCount', this._projectCount);
+        ipcRenderer.on(
+            'countAllProjectsWithoutParentResult',
+            this._projectCount
+        );
         ipcRenderer.on('scanPathComplete', this._scanPathComplete);
     };
 
     private _closeListeners = () => {
         ipcRenderer.removeListener('filteredProjects', this._filteredProjects);
-        ipcRenderer.removeListener('projectCount', this._projectCount);
+        ipcRenderer.removeListener(
+            'countAllProjectsWithoutParentResult',
+            this._projectCount
+        );
         ipcRenderer.removeListener('scanPathComplete', this._scanPathComplete);
     };
 

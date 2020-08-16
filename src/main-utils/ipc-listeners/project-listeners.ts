@@ -1,7 +1,7 @@
 import {
-    countAllProjects,
+    countAllProjectsWithoutParent,
     filterTextChange,
-    getProjectsByIds,
+    getProjectsByIdsAndSearchText,
     openDirectory,
     openProject,
     tearDownProjectService,
@@ -17,8 +17,8 @@ const setupListeners = () => {
     ipcMain.on('requestFilteredProjects', (event, text: string) => {
         filterTextChange(event, text, 'filteredProjects');
     });
-    ipcMain.on('requestProjectCount', (event) => {
-        countAllProjects()
+    ipcMain.on('countAllProjectsWithoutParent', (event) => {
+        countAllProjectsWithoutParent()
             .pipe(
                 catchError((err) => {
                     reportException(
@@ -28,7 +28,9 @@ const setupListeners = () => {
                     return of(0);
                 })
             )
-            .subscribe((count) => event.reply('projectCount', count));
+            .subscribe((count) => {
+                event.reply('countAllProjectsWithoutParentResult', count);
+            });
     });
     ipcMain.on('openProject', (event, projectId) => {
         openProject(projectId).subscribe(null, (err: Error) =>
@@ -40,8 +42,8 @@ const setupListeners = () => {
             reportException(event, new AppException(err.message, err.stack))
         );
     });
-    ipcMain.on('getProjectsByIds', (event, ids) => {
-        getProjectsByIds(ids)
+    ipcMain.on('getProjectsByIds', (event, ids, text = '') => {
+        getProjectsByIdsAndSearchText(ids, text)
             .pipe(
                 catchError((err: Error) => {
                     reportException(

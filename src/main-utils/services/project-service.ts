@@ -1,10 +1,10 @@
 import { Subject, forkJoin, of, timer } from 'rxjs';
 import { catchError, debounce, map, switchMap, tap } from 'rxjs/operators';
 import {
-    countAllProjects as countAllProjectsFromRepository,
+    countAllProjectsWithoutParent as countAllProjectsWithoutParentFromRepository,
     getAllProjectsWithoutParent,
     getProjectById,
-    getProjectsByIds as getProjectsByIdsFromRepository,
+    getProjectsByIdsAndSearchText as getProjectsByIdsAndSearchTextFromRepository,
     incrementClickCount,
     removeProjectsByPath as removeProjectsByPathFromRepostitory,
     searchProjectsWithoutParent,
@@ -44,12 +44,12 @@ const filterTextChangeSubscription = filterTextChangeSubject
         event.reply(returnEventName, projects);
     });
 
-export const countAllProjects = () => {
-    return countAllProjectsFromRepository();
+export const countAllProjectsWithoutParent = () => {
+    return countAllProjectsWithoutParentFromRepository();
 };
 
-export const getProjectsByIds = (ids: string[]) =>
-    getProjectsByIdsFromRepository(ids);
+export const getProjectsByIdsAndSearchText = (ids: string[], text: string) =>
+    getProjectsByIdsAndSearchTextFromRepository(ids, text);
 
 export const openProject = (id: string) => {
     return forkJoin([

@@ -18,9 +18,6 @@ import { Link } from 'react-router-dom';
 import { RootState } from 'src/redux/store/types';
 import { appActions } from 'src/redux/features/app';
 import { connect } from 'react-redux';
-import { debounceTime } from 'rxjs/operators';
-
-const WAIT_INTERVAL = 150;
 
 interface Props {
     theme: AppTheme;
@@ -35,10 +32,6 @@ interface Props {
 }
 
 class TextFilter extends PureComponent<Props, {}> {
-    private primaryInputSubject = new Subject<string>();
-
-    private primaryInputSubscription: Subscription | undefined;
-
     private inputRef = React.createRef<ITextField>();
 
     public componentDidUpdate(oldProps: Props) {
@@ -135,23 +128,10 @@ class TextFilter extends PureComponent<Props, {}> {
     public componentDidMount() {
         this.props.filterTextChange('');
         this.focus();
-        this.primaryInputSubscription = this.primaryInputSubject
-            .pipe(debounceTime(WAIT_INTERVAL))
-            .subscribe(this.props.filterTextChange);
-    }
-
-    public componentWillUnmount() {
-        if (!!this.primaryInputSubscription) {
-            this.primaryInputSubscription.unsubscribe();
-        }
     }
 
     public focus() {
-        setTimeout(() => {
-            if (!!this.inputRef.current) {
-                this.inputRef.current.focus();
-            }
-        });
+        setTimeout(() => this.inputRef?.current.focus());
     }
 
     private _onInputChange = (event: any) => {
@@ -160,7 +140,6 @@ class TextFilter extends PureComponent<Props, {}> {
             if (text !== this.props.filterText) {
                 this.props.filterTextChange(event.target.value);
             }
-            // this.primaryInputSubject.next(event.target.value);
         }
     };
 

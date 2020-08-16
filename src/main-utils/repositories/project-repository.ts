@@ -45,18 +45,15 @@ export const incrementClickCount = (_id: string) => {
     });
 };
 
-export const countAllProjects = () =>
+export const countAllProjectsWithoutParent = () =>
     findChildProjectIds().pipe(
-        switchMap(
-            (childProjectIds) =>
-                new Observable<number>((o) => {
-                    db.count({
-                        _id: { $nin: Array.from(childProjectIds) },
-                    }).exec((err, count) => {
-                        !!err ? o.error(err) : o.next(count);
-                        o.complete();
-                    });
-                })
+        switchMap((childProjectIds) =>
+            findProjectCount(
+                buildQueryWithTextSearchAndExludedProjectIds(
+                    '',
+                    Array.from(childProjectIds)
+                )
+            )
         )
     );
 
@@ -68,9 +65,9 @@ export const getProjectById = (_id: string) =>
         });
     });
 
-export const getProjectsByIds = (ids: string[]) =>
+export const getProjectsByIdsAndSearchText = (ids: string[], text = '') =>
     new Observable<Project[]>((o) => {
-        db.find({ _id: { $in: ids } })
+        db.find(buildQueryWithTextSearchAndIncludedProjectIds(text, ids))
             .sort({ clickCount: -1, name: 1, path: 1 })
             .exec((err, projects) => {
                 !!err ? o.error(err) : o.next(projects);
@@ -88,7 +85,12 @@ export const getAllProjectsWithoutParent = () =>
 export const searchProjectsWithoutParent = (text: string) =>
     findChildProjectIds().pipe(
         switchMap((childProjectIds) =>
-            findProjects(buildQuery(text, childProjectIds))
+            findProjects(
+                buildQueryWithTextSearchAndExludedProjectIds(
+                    text,
+                    Array.from(childProjectIds)
+                )
+            )
         )
     );
 
@@ -117,6 +119,15 @@ const findProjects = (query: any) => {
                 !!err ? o.error(err) : o.next(projects);
                 o.complete();
             });
+    });
+};
+
+const findProjectCount = (query: any) => {
+    return new Observable<number>((o) => {
+        db.count(query).exec((err, count) => {
+            !!err ? o.error(err) : o.next(count);
+            o.complete();
+        });
     });
 };
 
@@ -207,31 +218,46 @@ const updateChildIds = (parentChildrenMap: Map<string, string[]>) => {
     return clearChildren$.pipe(() => merge(...updateEach$));
 };
 
-const buildQuery = (text: string, childProjectIds: Set<string>) => {
-    const tokenizedText = text.toLowerCase().replace(/\//g, '\\').split(' ');
+const buildQueryWithTextSearchAndExludedProjectIds = (
+    text: string,
+    excludedProjectIds: string[]
+) => {
     return {
         $and: [
-            { _id: { $nin: Array.from(childProjectIds) } },
-            ...tokenizedText.map((token) => ({
-                $or: [
-                    {
-                        $where: function () {
-                            return !!(<string>this.name)
-                                ?.toLowerCase()
-                                .includes(token);
-                        },
-                    },
-                    {
-                        $where: function () {
-                            return !!(<string>this.path)
-                                ?.toLowerCase()
-                                .includes(token);
-                        },
-                    },
-                ],
-            })),
+            { _id: { $nin: excludedProjectIds } },
+            ...buildQueryForText(text),
         ],
     };
+};
+
+const buildQueryWithTextSearchAndIncludedProjectIds = (
+    text: string,
+    includedProjectIds: string[]
+) => {
+    return {
+        $and: [
+            { _id: { $in: includedProjectIds } },
+            ...buildQueryForText(text),
+        ],
+    };
+};
+
+const buildQueryForText = (text: string) => {
+    const tokenizedText = text.toLowerCase().replace(/\//g, '\\').split(' ');
+    return tokenizedText.map((token) => ({
+        $or: [
+            {
+                $where: function () {
+                    return !!(<string>this.name)?.toLowerCase().includes(token);
+                },
+            },
+            {
+                $where: function () {
+                    return !!(<string>this.path)?.toLowerCase().includes(token);
+                },
+            },
+        ],
+    }));
 };
 
 const getParentChildMap = (projects: Project[]) => {
