@@ -8,7 +8,7 @@ import {
 import React, { Component } from 'react';
 import { Subscription, fromEvent, merge, partition } from 'rxjs';
 
-import ProjectList from 'src/components/PomList';
+import ProjectList from 'src/components/ProjectList';
 import { RootState } from 'src/redux/store/types';
 import Snackbar from 'src/components/Snackbar';
 import TextFilter from 'src/components/TextFilter';
@@ -65,6 +65,8 @@ class Home extends Component<Props, State> {
                     ref={this.textFilterRef}
                 />
                 <ProjectList
+                    width={1200}
+                    height={651}
                     cursor={cursor}
                     projects={filteredProjects}
                     onAnyContextMenuClosed={this.focusTextFilterInput}

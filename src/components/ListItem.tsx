@@ -82,6 +82,7 @@ class ListItem extends Component<Props, State> {
                         theme={theme}
                         selected={cursor === index}
                         childrenIds={project.children}
+                        onDialogClosed={this.props.onContextMenuClosed}
                     />
                 )}
                 <TooltipHost

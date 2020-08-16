@@ -4,6 +4,7 @@ import {
     countAllProjects as countAllProjectsFromRepository,
     getAllProjectsWithoutParent,
     getProjectById,
+    getProjectsByIds as getProjectsByIdsFromRepository,
     incrementClickCount,
     removeProjectsByPath as removeProjectsByPathFromRepostitory,
     searchProjectsWithoutParent,
@@ -11,7 +12,6 @@ import {
 } from 'src/main-utils/repositories/project-repository';
 import { dirname, normalize } from 'path';
 
-import { Project } from 'src/types';
 import { getIdeByProjectType } from 'src/main-utils/services/settings-service';
 import { spawn } from 'child_process';
 
@@ -45,13 +45,11 @@ const filterTextChangeSubscription = filterTextChangeSubject
     });
 
 export const countAllProjects = () => {
-    return countAllProjectsFromRepository().pipe(
-        catchError((err) => {
-            console.error(err);
-            return of(0);
-        })
-    );
+    return countAllProjectsFromRepository();
 };
+
+export const getProjectsByIds = (ids: string[]) =>
+    getProjectsByIdsFromRepository(ids);
 
 export const openProject = (id: string) => {
     return forkJoin([

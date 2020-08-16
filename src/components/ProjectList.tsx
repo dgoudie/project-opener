@@ -7,14 +7,16 @@ import { mergeStyleSets } from '@fluentui/react';
 interface Props {
     projects: Project[];
     cursor: number;
-    onAnyContextMenuClosed: () => void;
+    height: number;
+    width: number;
+    onAnyContextMenuClosed?: () => void;
 }
 
 interface State {
     classes: ReturnType<typeof buildClasses>;
 }
 
-export default class PomList extends React.PureComponent<Props, State> {
+export default class ProjectList extends React.PureComponent<Props, State> {
     state = {
         classes: buildClasses(),
     };
@@ -28,8 +30,8 @@ export default class PomList extends React.PureComponent<Props, State> {
             <List
                 ref={this.listRef}
                 className={classes.pomList}
-                width={1200}
-                height={651}
+                width={this.props.width}
+                height={this.props.height}
                 rowHeight={62}
                 rowRenderer={this.renderRow}
                 rowCount={projects.length}

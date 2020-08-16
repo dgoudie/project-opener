@@ -46,12 +46,19 @@ export const incrementClickCount = (_id: string) => {
 };
 
 export const countAllProjects = () =>
-    new Observable<number>((o) => {
-        db.count({}).exec((err, count) => {
-            !!err ? o.error(err) : o.next(count);
-            o.complete();
-        });
-    });
+    findChildProjectIds().pipe(
+        switchMap(
+            (childProjectIds) =>
+                new Observable<number>((o) => {
+                    db.count({
+                        _id: { $nin: Array.from(childProjectIds) },
+                    }).exec((err, count) => {
+                        !!err ? o.error(err) : o.next(count);
+                        o.complete();
+                    });
+                })
+        )
+    );
 
 export const getProjectById = (_id: string) =>
     new Observable<Project>((o) => {
@@ -59,6 +66,16 @@ export const getProjectById = (_id: string) =>
             !!err ? o.error(err) : o.next(project);
             o.complete();
         });
+    });
+
+export const getProjectsByIds = (ids: string[]) =>
+    new Observable<Project[]>((o) => {
+        db.find({ _id: { $in: ids } })
+            .sort({ clickCount: -1, name: 1, path: 1 })
+            .exec((err, projects) => {
+                !!err ? o.error(err) : o.next(projects);
+                o.complete();
+            });
     });
 
 export const getAllProjectsWithoutParent = () =>
