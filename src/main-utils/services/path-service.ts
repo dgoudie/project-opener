@@ -1,5 +1,13 @@
 import { AppException, Project, projectTypes } from 'src/types';
-import { EMPTY, Observable, concat, forkJoin, from, of } from 'rxjs';
+import {
+    EMPTY,
+    Observable,
+    concat,
+    forkJoin,
+    from,
+    of,
+    throwError,
+} from 'rxjs';
 import {
     catchError,
     filter,
@@ -97,53 +105,48 @@ const convertFilesToProjects = (
                     const matchingProjectType = projectTypes.find((pt) =>
                         path.toLowerCase().includes(pt.projectFileName)
                     );
+                    let project: Project = {
+                        path,
+                        name: null,
+                        clickCount: 0,
+                        inside,
+                        type: matchingProjectType,
+                        children: [],
+                    };
+                    let name$: Observable<string>;
                     switch (matchingProjectType.key) {
                         case 'MAVEN':
-                            return parsePomFile(fileContents, path, event).pipe(
-                                map<PomFile, Project>((pomFile) => ({
-                                    path,
-                                    name: pomFile.project.artifactId[0],
-                                    clickCount: 0,
-                                    inside,
-                                    type: matchingProjectType,
-                                    children: [],
-                                }))
-                            );
+                            name$ = getNameFromPomFile(fileContents);
+                            break;
                         case 'NPM':
-                            return parsePackageJsonFile(
-                                fileContents,
-                                path,
-                                event
-                            ).pipe(
-                                map<PackageJsonFile, Project>(
-                                    (packageJsonFile) => ({
-                                        path,
-                                        name: packageJsonFile.name,
-                                        clickCount: 0,
-                                        inside,
-                                        type: matchingProjectType,
-                                        children: [],
-                                    })
-                                )
-                            );
+                            name$ = getNameFromPackageJsonFile(fileContents);
+                            break;
                         case 'RUST':
-                            return parseCargoTomlFile(
-                                fileContents,
-                                path,
-                                event
-                            ).pipe(
-                                map<CargoTomlFile, Project>(
-                                    (cargoTomlFile) => ({
-                                        path,
-                                        name: cargoTomlFile.package.name,
-                                        clickCount: 0,
-                                        inside,
-                                        type: matchingProjectType,
-                                        children: [],
-                                    })
+                            name$ = getNameFromCargoTomlFile(fileContents);
+                            break;
+                        case 'PYTHON':
+                            name$ = getNameFromPipfile(fileContents);
+                            break;
+                    }
+                    if (!name$) {
+                        return throwError(
+                            `Unable to determine project file for project type ${matchingProjectType.key}`
+                        );
+                    }
+                    return name$.pipe(
+                        catchError((err: Error) => {
+                            reportException(
+                                event,
+                                new AppException(
+                                    `An error occurred when attempting to parse the file ${path}: ${err.message}`,
+                                    err.stack,
+                                    'WARNING'
                                 )
                             );
-                    }
+                            return EMPTY;
+                        }),
+                        map((name) => ({ ...project, name }))
+                    );
                 })
             )
         ),
@@ -175,75 +178,42 @@ const read = (
     );
 };
 
-const parsePomFile = (
-    data: string,
-    path: string,
-    event: Electron.IpcMainEvent
-): Observable<PomFile> => {
+const getNameFromPomFile = (data: string): Observable<string> => {
     return from(
-        new Observable<PomFile>((observer) =>
+        new Observable<string>((observer) =>
             parseString(data, (err, result: PomFile) => {
-                !!err ? observer.error(err) : observer.next(result);
+                !!err
+                    ? observer.error(err)
+                    : observer.next(result.project.artifactId[0]);
                 observer.complete();
-            })
-        ).pipe(
-            catchError((err: Error) => {
-                reportException(
-                    event,
-                    new AppException(
-                        `An error occurred when attempting to parse the file ${path}: ${err.message}`,
-                        err.stack,
-                        'WARNING'
-                    )
-                );
-                return EMPTY;
             })
         )
     );
 };
 
-const parsePackageJsonFile = (
-    data: string,
-    path: string,
-    event: Electron.IpcMainEvent
-): Observable<PackageJsonFile> => {
-    try {
-        return of(JSON.parse(data));
-    } catch (err) {
-        reportException(
-            event,
-            new AppException(
-                `An error occurred when attempting to parse the file ${path}: ${err.message}`,
-                err.stack,
-                'WARNING'
-            )
-        );
-        return EMPTY;
+const getNameFromPackageJsonFile = (data: string): Observable<string> => {
+    const packageJsonFile: PackageJsonFile = JSON.parse(data);
+    if (!packageJsonFile?.name) {
+        throw new Error('Malformed package.json');
     }
+    return of(packageJsonFile.name);
 };
 
-const parseCargoTomlFile = (
-    data: string,
-    path: string,
-    event: Electron.IpcMainEvent
-): Observable<CargoTomlFile> => {
-    try {
-        const cargoTomlFile: CargoTomlFile = toml.parse(data);
-        if (!cargoTomlFile?.package?.name) {
-            throw new Error();
-        }
-        return of(cargoTomlFile);
-    } catch (err) {
-        reportException(
-            event,
-            new AppException(
-                `An error occurred when attempting to parse the file ${path}: ${err.message}`,
-                err.stack,
-                'WARNING'
-            )
-        );
-        return EMPTY;
+const getNameFromCargoTomlFile = (data: string): Observable<string> => {
+    const cargoTomlFile: CargoTomlFile = toml.parse(data);
+    if (!cargoTomlFile?.package?.name) {
+        throw new Error('Malformed Cargo.toml');
     }
+    return of(cargoTomlFile.package.name);
+};
+
+const getNameFromPipfile = (data: string): Observable<string> => {
+    const pipfile: Pipfile = toml.parse(data);
+    console.log('pipfile', pipfile);
+    if (!pipfile?.source[0]?.name) {
+        throw new Error('Malformed Pipfile');
+    }
+    return of(pipfile.source[0].name);
 };
 
 const getAddedAndRemovedProjects = (
@@ -276,4 +246,8 @@ interface PackageJsonFile {
 
 interface CargoTomlFile {
     package: { name: string };
+}
+
+interface Pipfile {
+    source: { name: string }[];
 }
