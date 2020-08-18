@@ -180,41 +180,50 @@ const read = (
 
 const getNameFromPomFile = (data: string): Observable<string> => {
     return from(
-        new Observable<string>((observer) =>
+        new Observable<PomFile>((observer) =>
             parseString(data, (err, result: PomFile) => {
-                !!err
-                    ? observer.error(err)
-                    : observer.next(result.project.artifactId[0]);
+                !!err ? observer.error(err) : observer.next(result);
                 observer.complete();
             })
+        )
+    ).pipe(
+        switchMap((pomXmlFile) =>
+            !!pomXmlFile?.project?.artifactId[0]
+                ? of(pomXmlFile.project.artifactId[0])
+                : throwError(new Error('Malformed pom.xml'))
         )
     );
 };
 
-const getNameFromPackageJsonFile = (data: string): Observable<string> => {
-    const packageJsonFile: PackageJsonFile = JSON.parse(data);
-    if (!packageJsonFile?.name) {
-        throw new Error('Malformed package.json');
-    }
-    return of(packageJsonFile.name);
-};
+const getNameFromPackageJsonFile = (data: string): Observable<string> =>
+    of(data).pipe(
+        map<string, PackageJsonFile>((d) => JSON.parse(d)),
+        switchMap((packageJsonFile) =>
+            !!packageJsonFile?.name
+                ? of(packageJsonFile.name)
+                : throwError(new Error('Malformed package.json'))
+        )
+    );
 
-const getNameFromCargoTomlFile = (data: string): Observable<string> => {
-    const cargoTomlFile: CargoTomlFile = toml.parse(data);
-    if (!cargoTomlFile?.package?.name) {
-        throw new Error('Malformed Cargo.toml');
-    }
-    return of(cargoTomlFile.package.name);
-};
+const getNameFromCargoTomlFile = (data: string): Observable<string> =>
+    of(data).pipe(
+        map<string, CargoTomlFile>((d) => toml.parse(d)),
+        switchMap((cargoTomlFile) =>
+            !!cargoTomlFile?.package?.name
+                ? of(cargoTomlFile.package?.name)
+                : throwError(new Error('Malformed Cargo.toml'))
+        )
+    );
 
-const getNameFromPipfile = (data: string): Observable<string> => {
-    const pipfile: Pipfile = toml.parse(data);
-    console.log('pipfile', pipfile);
-    if (!pipfile?.source[0]?.name) {
-        throw new Error('Malformed Pipfile');
-    }
-    return of(pipfile.source[0].name);
-};
+const getNameFromPipfile = (data: string): Observable<string> =>
+    of(data).pipe(
+        map<string, Pipfile>((d) => toml.parse(d)),
+        switchMap((cargoTomlFile) =>
+            !!cargoTomlFile?.source[0]?.name
+                ? of(cargoTomlFile.source[0].name)
+                : throwError(new Error('Malformed Pipfile'))
+        )
+    );
 
 const getAddedAndRemovedProjects = (
     oldProjects: Project[],

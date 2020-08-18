@@ -9,6 +9,7 @@ import {
 
 import { AppException } from 'src/types';
 import { catchError } from 'rxjs/operators';
+import { hashStringArray } from 'src/utils/hash-string-array';
 import { ipcMain } from 'electron';
 import { of } from 'rxjs';
 import { reportException } from 'src/main-utils/services/error-service';
@@ -42,7 +43,10 @@ const setupListeners = () => {
             reportException(event, new AppException(err.message, err.stack))
         );
     });
-    ipcMain.on('getProjectsByIds', (event, ids, text = '') => {
+    ipcMain.on('getProjectsByIds', (event, ids: string[], text = '') => {
+        const responseEventKey = `getProjectsByIdsResult_${hashStringArray(
+            ids
+        )}`;
         getProjectsByIdsAndSearchText(ids, text)
             .pipe(
                 catchError((err: Error) => {
@@ -53,9 +57,7 @@ const setupListeners = () => {
                     return of([]);
                 })
             )
-            .subscribe((projects) =>
-                event.reply('getProjectsByIdsResult', projects)
-            );
+            .subscribe((projects) => event.reply(responseEventKey, projects));
     });
 };
 

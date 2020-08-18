@@ -23,6 +23,7 @@ import { Subject, Subscription, of, timer } from 'rxjs';
 import { debounce, map } from 'rxjs/operators';
 
 import ProjectList from 'src/components/ProjectList';
+import { hashStringArray } from 'src/utils/hash-string-array';
 
 const WAIT_INTERVAL = 150;
 
@@ -37,6 +38,7 @@ interface State {
     dialogOpen: boolean;
     projects: Project[];
     filterText: string;
+    requestId: number;
 }
 
 const dialogContentProps: IDialogContentProps = {
@@ -49,6 +51,7 @@ export default class ListItemModules extends Component<Props, State> {
         dialogOpen: false,
         projects: [],
         filterText: '',
+        requestId: hashStringArray(this.props.childrenIds),
     };
     rootRef = React.createRef<HTMLDivElement>();
     inputRef = React.createRef<ITextField>();
@@ -93,7 +96,13 @@ export default class ListItemModules extends Component<Props, State> {
                                     }
                                     underlined
                                     type='search'
-                                    label={`Search ${this.props.childrenIds.length} modules for:`}
+                                    label={`Search ${
+                                        this.props.childrenIds.length
+                                    } ${
+                                        this.props.childrenIds.length === 1
+                                            ? `module`
+                                            : `modules`
+                                    } for:`}
                                 />
                                 <IconButton
                                     className={classes.dialogHeaderCloseButton}
@@ -119,7 +128,7 @@ export default class ListItemModules extends Component<Props, State> {
 
     componentDidMount() {
         ipcRenderer.addListener(
-            'getProjectsByIdsResult',
+            `getProjectsByIdsResult_${this.state.requestId}`,
             this._getProjectsByIdsResult
         );
         this._requestProjects();
@@ -142,7 +151,7 @@ export default class ListItemModules extends Component<Props, State> {
 
     componentWillUnmount() {
         ipcRenderer.removeListener(
-            'getProjectsByIdsResult',
+            `getProjectsByIdsResult_${this.state.requestId}`,
             this._getProjectsByIdsResult
         );
         this.primaryInputSubscription?.unsubscribe();
@@ -174,7 +183,9 @@ export default class ListItemModules extends Component<Props, State> {
     private _getProjectsByIdsResult = (
         _event: IpcRendererEvent,
         projects: Project[]
-    ) => this.setState({ projects });
+    ) => {
+        this.setState({ projects });
+    };
 }
 
 const buildClasses = (
