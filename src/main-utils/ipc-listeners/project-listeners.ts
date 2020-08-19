@@ -9,7 +9,6 @@ import {
 
 import { AppException } from 'src/types';
 import { catchError } from 'rxjs/operators';
-import { hashStringArray } from 'src/utils/hash-string-array';
 import { ipcMain } from 'electron';
 import { of } from 'rxjs';
 import { reportException } from 'src/main-utils/services/error-service';
@@ -43,22 +42,22 @@ const setupListeners = () => {
             reportException(event, new AppException(err.message, err.stack))
         );
     });
-    ipcMain.on('getProjectsByIds', (event, ids: string[], text = '') => {
-        const responseEventKey = `getProjectsByIdsResult_${hashStringArray(
-            ids
-        )}`;
-        getProjectsByIdsAndSearchText(ids, text)
-            .pipe(
-                catchError((err: Error) => {
-                    reportException(
-                        event,
-                        new AppException(err.message, err.stack)
-                    );
-                    return of([]);
-                })
-            )
-            .subscribe((projects) => event.reply(responseEventKey, projects));
-    });
+    ipcMain.on(
+        'getProjectsByIds',
+        (event, ids: string[], text = '', uuid: string) => {
+            getProjectsByIdsAndSearchText(ids, text)
+                .pipe(
+                    catchError((err: Error) => {
+                        reportException(
+                            event,
+                            new AppException(err.message, err.stack)
+                        );
+                        return of([]);
+                    })
+                )
+                .subscribe((projects) => event.reply(uuid, projects));
+        }
+    );
 };
 
 const removeListeners = () => {

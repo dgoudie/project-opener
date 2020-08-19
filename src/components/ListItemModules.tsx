@@ -23,7 +23,7 @@ import { Subject, Subscription, of, timer } from 'rxjs';
 import { debounce, map } from 'rxjs/operators';
 
 import ProjectList from 'src/components/ProjectList';
-import { hashStringArray } from 'src/utils/hash-string-array';
+import { uuidv4 } from 'src/utils/uuid';
 
 const WAIT_INTERVAL = 150;
 
@@ -38,7 +38,7 @@ interface State {
     dialogOpen: boolean;
     projects: Project[];
     filterText: string;
-    requestId: number;
+    uuid: string;
 }
 
 const dialogContentProps: IDialogContentProps = {
@@ -51,7 +51,7 @@ export default class ListItemModules extends Component<Props, State> {
         dialogOpen: false,
         projects: [],
         filterText: '',
-        requestId: hashStringArray(this.props.childrenIds),
+        uuid: uuidv4(),
     };
     rootRef = React.createRef<HTMLDivElement>();
     inputRef = React.createRef<ITextField>();
@@ -127,10 +127,7 @@ export default class ListItemModules extends Component<Props, State> {
     }
 
     componentDidMount() {
-        ipcRenderer.addListener(
-            `getProjectsByIdsResult_${this.state.requestId}`,
-            this._getProjectsByIdsResult
-        );
+        ipcRenderer.addListener(this.state.uuid, this._getProjectsByIdsResult);
         this._requestProjects();
         this.primaryInputSubscription = this.primaryInputSubject
             .pipe(
@@ -151,7 +148,7 @@ export default class ListItemModules extends Component<Props, State> {
 
     componentWillUnmount() {
         ipcRenderer.removeListener(
-            `getProjectsByIdsResult_${this.state.requestId}`,
+            this.state.uuid,
             this._getProjectsByIdsResult
         );
         this.primaryInputSubscription?.unsubscribe();
@@ -161,7 +158,8 @@ export default class ListItemModules extends Component<Props, State> {
         ipcRenderer.send(
             'getProjectsByIds',
             this.props.childrenIds,
-            this.state.filterText
+            this.state.filterText,
+            this.state.uuid
         );
     }
 
