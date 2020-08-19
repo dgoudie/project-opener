@@ -3,6 +3,7 @@ import './App.module.scss';
 import * as React from 'react';
 
 import {
+    Redirect,
     Route,
     RouteComponentProps,
     Switch,

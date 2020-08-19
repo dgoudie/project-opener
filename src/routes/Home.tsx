@@ -9,6 +9,7 @@ import React, { Component } from 'react';
 import { Subscription, fromEvent, merge, partition } from 'rxjs';
 
 import ProjectList from 'src/components/ProjectList';
+import { Redirect } from 'react-router-dom';
 import { RootState } from 'src/redux/store/types';
 import Snackbar from 'src/components/Snackbar';
 import TextFilter from 'src/components/TextFilter';
@@ -25,6 +26,7 @@ interface State {
     filteredProjects: Project[] | null;
     projectCount: number | null;
     cursor: number;
+    redirectToGeneralSettings: boolean;
 }
 
 interface Props {
@@ -39,6 +41,7 @@ class Home extends Component<Props, State> {
         projectCount: null,
         filteredProjects: null,
         cursor: 0,
+        redirectToGeneralSettings: false,
     };
 
     private homeDivRef = React.createRef<HTMLDivElement>();
@@ -50,6 +53,9 @@ class Home extends Component<Props, State> {
         // if (!this.props.setupComplete) {
         //     return <Redirect to='/setup/start' />;
         // }
+        if (this.state.redirectToGeneralSettings) {
+            return <Redirect to='/settings/general' />;
+        }
         const { filteredProjects, filterText, projectCount } = this.state;
         const { cursor } = this.state;
         if (projectCount === null || filteredProjects === null) {
@@ -77,7 +83,7 @@ class Home extends Component<Props, State> {
     }
 
     public componentWillMount() {
-        this._setupFilteredProjectsListener();
+        this._setupListeners();
         this._requestFilteredProjects(this.state.filterText);
         this._requestProjectCount();
     }
@@ -127,13 +133,20 @@ class Home extends Component<Props, State> {
         ipcRenderer.send('requestFilteredProjects', filterText);
     };
 
-    private _setupFilteredProjectsListener = () => {
+    private _redirectToGeneralSettings = () =>
+        this.setState({ redirectToGeneralSettings: true });
+
+    private _setupListeners = () => {
         ipcRenderer.on('filteredProjects', this._filteredProjects);
         ipcRenderer.on(
             'countAllProjectsWithoutParentResult',
             this._projectCount
         );
         ipcRenderer.on('scanPathComplete', this._scanPathComplete);
+        ipcRenderer.on(
+            'redirectToGeneralSettings',
+            this._redirectToGeneralSettings
+        );
     };
 
     private _closeListeners = () => {
@@ -143,6 +156,10 @@ class Home extends Component<Props, State> {
             this._projectCount
         );
         ipcRenderer.removeListener('scanPathComplete', this._scanPathComplete);
+        ipcRenderer.removeListener(
+            'redirectToGeneralSettings',
+            this._redirectToGeneralSettings
+        );
     };
 
     private _filteredProjects = (
@@ -170,15 +187,16 @@ class Home extends Component<Props, State> {
 
     private handleKeyEvent = (event: KeyboardEvent) => {
         const { filteredProjects, cursor } = this.state;
-        if (event.key === 'ArrowUp' && cursor > 0) {
+        if (event.key === 'ArrowUp') {
             event.preventDefault();
-            this.setState({ cursor: cursor - 1 });
-        } else if (
-            event.key === 'ArrowDown' &&
-            cursor < filteredProjects.length - 1
-        ) {
+            let c = cursor - 1;
+            this.setState({
+                cursor: c <= -1 ? filteredProjects.length - 1 : c,
+            });
+        } else if (event.key === 'ArrowDown') {
             event.preventDefault();
-            this.setState({ cursor: cursor + 1 });
+            let c = cursor + 1;
+            this.setState({ cursor: c >= filteredProjects.length ? 0 : c });
         } else if (event.key === 'PageUp' && cursor > 0) {
             event.preventDefault();
             let newCursor = cursor - PAGE_SIZE;

@@ -1,4 +1,4 @@
-import { BrowserWindow, app } from 'electron';
+import { BrowserWindow, Menu, Tray, app } from 'electron';
 import { setupServices, tearDownServices } from 'src/main-utils/ipc-listeners';
 
 import isDev from 'electron-is-dev';
@@ -34,6 +34,10 @@ if (require('electron-squirrel-startup') || !gotTheLock) {
             fullscreenable: false,
         });
 
+        const showWindow = () => {
+            mainWindow.webContents.send('showWindow');
+        };
+
         // and load the index.html of the app.
         mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
@@ -43,10 +47,28 @@ if (require('electron-squirrel-startup') || !gotTheLock) {
         app.on('second-instance', () => {
             // Someone tried to run a second instance, we should focus our window.
             if (mainWindow) {
-                mainWindow.show();
-                mainWindow.focus();
+                showWindow();
             }
         });
+        const tray = new Tray(path.join(__dirname, 'logo.ico'));
+        const contextMenu = Menu.buildFromTemplate([
+            {
+                label: 'Show',
+                click: () => showWindow(),
+            },
+            {
+                label: 'Settings',
+                click: () => {
+                    showWindow();
+                    mainWindow.webContents.send('redirectToGeneralSettings');
+                },
+            },
+            { type: 'separator' },
+            { label: 'Exit', click: () => app.quit() },
+        ]);
+        tray.setToolTip('project-opener');
+        tray.setContextMenu(contextMenu);
+        tray.on('click', () => showWindow());
     };
 
     // This method will be called when Electron has finished

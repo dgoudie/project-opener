@@ -19,13 +19,23 @@ import {
 } from '@fluentui/react';
 import { IpcRendererEvent, ipcRenderer } from 'electron';
 import React, { Component } from 'react';
-import { Subject, Subscription, of, timer } from 'rxjs';
-import { debounce, map } from 'rxjs/operators';
+import {
+    Subject,
+    Subscription,
+    fromEvent,
+    merge,
+    of,
+    partition,
+    timer,
+} from 'rxjs';
+import { debounce, map, tap, throttleTime } from 'rxjs/operators';
 
 import ProjectList from 'src/components/ProjectList';
+import { openProject } from 'src/utils/open';
 import { uuidv4 } from 'src/utils/uuid';
 
 const WAIT_INTERVAL = 150;
+const PAGE_SIZE = 9;
 
 interface Props {
     theme: AppTheme;
@@ -38,6 +48,7 @@ interface State {
     dialogOpen: boolean;
     projects: Project[];
     filterText: string;
+    cursor: number;
     uuid: string;
 }
 
@@ -51,10 +62,14 @@ export default class ListItemModules extends Component<Props, State> {
         dialogOpen: false,
         projects: [],
         filterText: '',
+        cursor: 0,
         uuid: uuidv4(),
     };
     rootRef = React.createRef<HTMLDivElement>();
     inputRef = React.createRef<ITextField>();
+    dialogRef = React.createRef<HTMLDivElement>();
+
+    private keyHandlerSubscription: Subscription = null;
     render() {
         const classes = buildClasses(
             this.props.theme,
@@ -82,10 +97,16 @@ export default class ListItemModules extends Component<Props, State> {
                     className={classes.dialog}
                     hidden={!this.state.dialogOpen}
                     onDismissed={this._onClose}
+                    onLayerDidMount={this._dialogDidMount}
+                    //@ts-ignore
+                    ref={this.dialogRef}
                     dialogContentProps={{
                         ...dialogContentProps,
                         title: (
-                            <div className={classes.dialogHeader}>
+                            <div
+                                className={classes.dialogHeader}
+                                ref={this.dialogRef}
+                            >
                                 <TextField
                                     componentRef={this.inputRef}
                                     className={classes.dialogHeaderInput}
@@ -117,7 +138,7 @@ export default class ListItemModules extends Component<Props, State> {
                 >
                     <ProjectList
                         projects={this.state.projects}
-                        cursor={0}
+                        cursor={this.state.cursor}
                         height={500}
                         width={1100}
                     />
@@ -167,6 +188,60 @@ export default class ListItemModules extends Component<Props, State> {
         event.stopPropagation();
         this.setState({ dialogOpen: true });
         this._focusInput();
+    };
+
+    private _dialogDidMount = () => {
+        this.keyHandlerSubscription?.unsubscribe();
+        const [arrow$, other$] = partition(
+            fromEvent<KeyboardEvent>(this.dialogRef.current, 'keydown'),
+            (event) =>
+                event.key === 'ArrowUp' ||
+                event.key === 'ArrowDown' ||
+                event.key === 'PageUp' ||
+                event.key === 'PageDown'
+        );
+        this.keyHandlerSubscription = merge(
+            arrow$.pipe(throttleTime(50)),
+            other$
+        ).subscribe(this.handleKeyEvent);
+    };
+
+    private handleKeyEvent = (event: KeyboardEvent) => {
+        const { projects, cursor } = this.state;
+        if (event.key === 'ArrowUp') {
+            event.preventDefault();
+            let c = cursor - 1;
+            this.setState({ cursor: c <= -1 ? projects.length - 1 : c });
+        } else if (event.key === 'ArrowDown') {
+            event.preventDefault();
+            let c = cursor + 1;
+            this.setState({ cursor: c >= projects.length ? 0 : c });
+        } else if (event.key === 'PageUp' && cursor > 0) {
+            event.preventDefault();
+            let newCursor = cursor - PAGE_SIZE;
+            if (newCursor < 0) {
+                newCursor = 0;
+            }
+            this.setState({ cursor: newCursor });
+        } else if (event.key === 'PageDown' && cursor < projects.length - 1) {
+            event.preventDefault();
+            let newCursor = cursor + PAGE_SIZE;
+            if (newCursor > projects.length - 1) {
+                newCursor = projects.length - 1;
+            }
+            this.setState({ cursor: newCursor });
+        } else if (event.key === 'Home') {
+            event.preventDefault();
+            this.setState({ cursor: 0 });
+        } else if (event.key === 'End') {
+            event.preventDefault();
+            this.setState({ cursor: projects.length - 1 });
+        } else if (event.key === 'Enter' && !!this.state.projects.length) {
+            this.setState({ dialogOpen: false });
+            openProject(this.state.projects[this.state.cursor]);
+        } else if (event.key === 'Escape') {
+            this.setState({ dialogOpen: false });
+        }
     };
 
     private _onClose = () => {

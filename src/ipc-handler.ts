@@ -34,6 +34,9 @@ export const initListeners = (store: Store) => {
         store.dispatch(addException(exception));
         store.dispatch(setWindowVisible(true));
     });
+    ipcRenderer.on('showWindow', (_event) => {
+        store.dispatch(setWindowVisible(true));
+    });
 };
 export const requestSettings = () => {
     ipcRenderer.send('getAllSettings', {

@@ -49,15 +49,6 @@ class Settings extends Component<Props, State> {
 
     private keyHandlerSubscription: Subscription;
 
-    public componentDidMount() {
-        this._getActiveRouteFromLocation(this.props.location);
-        this.keyHandlerSubscription = this.setupKeyHandler();
-    }
-
-    public componentWillUnmount() {
-        this.keyHandlerSubscription.unsubscribe();
-    }
-
     public render() {
         const { redirectToHome, activeRoute } = this.state;
         // if (!setupComplete) {
@@ -158,6 +149,15 @@ class Settings extends Component<Props, State> {
                 </div>
             </div>
         );
+    }
+
+    public componentDidMount() {
+        this._getActiveRouteFromLocation(this.props.location);
+        this.keyHandlerSubscription = this.setupKeyHandler();
+    }
+
+    public componentWillUnmount() {
+        this.keyHandlerSubscription.unsubscribe();
     }
 
     private _onLinkClick = (

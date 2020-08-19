@@ -131,7 +131,7 @@ class TextFilter extends PureComponent<Props, {}> {
     }
 
     public focus() {
-        setTimeout(() => this.inputRef?.current.focus());
+        setTimeout(() => this.inputRef?.current?.focus());
     }
 
     private _onInputChange = (event: any) => {
