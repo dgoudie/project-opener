@@ -19,7 +19,6 @@ export const setWindowVisible = (value: boolean) =>
     action(appActions.SET_WINDOW_VISIBLE, value);
 export const setTheme = (theme: AppTheme) =>
     action(appActions.SET_THEME, theme);
-export const clearAndRescanAvailableIdes = () =>
-    action(appActions.CLEAR_AND_RESCAN_AVAILABLE_IDES);
+export const clearAvailableIdes = () => action(appActions.CLEAR_AVAILABLE_IDES);
 export const setAvailableIdes = (ides: Ide[]) =>
     action(appActions.SET_AVAILABLE_IDES, ides);

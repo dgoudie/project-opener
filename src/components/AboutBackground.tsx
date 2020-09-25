@@ -126,6 +126,7 @@ const buildClasses = (theme: AppTheme) => {
         root: {
             position: 'absolute',
             bottom: 70,
+            pointerEvents: 'none',
         },
         home: { clipPath: 'url(#cache)' },
         primary: {

@@ -16,9 +16,11 @@ import ExceptionViewer from 'src/components/ExceptionViewer';
 import Home from './routes/Home';
 import { RootState } from 'src/redux/store/types';
 import Settings from 'src/routes/Settings';
+import Setup from 'src/routes/Setup';
 import { appActions } from 'src/redux/features/app';
 import { connect } from 'react-redux';
 import { initListeners } from 'src/ipc-handler';
+import { ipcRenderer } from 'electron';
 import { requestSettingsFromMainProcess } from 'src/utils/load-settings';
 import store from 'src/redux/store';
 
@@ -46,7 +48,7 @@ class App extends React.Component<Props, {}> {
                 <Switch>
                     <Route exact path='/' component={Home} />
                     <Route path='/settings' component={Settings} />
-                    {/* <Route path='/setup' component={Setup} /> */}
+                    <Route path='/setup' component={Setup} />
                 </Switch>
                 <ExceptionViewer />
             </div>

@@ -31,6 +31,7 @@ interface State {
 
 interface Props {
     theme: AppTheme;
+    setupComplete: boolean;
     windowVisible: boolean;
     setWindowVisible: (value: boolean) => void;
 }
@@ -50,9 +51,9 @@ class Home extends Component<Props, State> {
     private keyHandlerSubscription: Subscription | undefined;
 
     public render() {
-        // if (!this.props.setupComplete) {
-        //     return <Redirect to='/setup/start' />;
-        // }
+        if (!this.props.setupComplete) {
+            return <Redirect to='/setup/start' />;
+        }
         if (this.state.redirectToGeneralSettings) {
             return <Redirect to='/settings/general' />;
         }
@@ -232,6 +233,7 @@ class Home extends Component<Props, State> {
 }
 const mapStateToProps = (state: RootState) => ({
     theme: state.app.theme,
+    setupComplete: state.settings.setupComplete,
     windowVisible: state.app.windowVisible,
 });
 const mapDispatchToProps = {

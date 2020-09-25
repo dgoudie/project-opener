@@ -83,7 +83,7 @@ export default function (
             };
         case ActionTypes.SET_AVAILABLE_IDES:
             return { ...state, availableIdes: action.payload };
-        case ActionTypes.CLEAR_AND_RESCAN_AVAILABLE_IDES:
+        case ActionTypes.CLEAR_AVAILABLE_IDES:
             return {
                 ...state,
                 availableIdes: null,

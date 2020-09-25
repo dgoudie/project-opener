@@ -25,7 +25,6 @@ import { appActions } from 'src/redux/features/app';
 import classnames from 'classnames';
 import { connect } from 'react-redux';
 import { ipcRenderer } from 'electron';
-import { settingsActions } from 'src/redux/features/settings';
 
 interface IdeSearcherProps {
     visible: boolean;
@@ -35,7 +34,7 @@ interface IdeSearcherProps {
     canceled: () => void;
     theme: AppTheme;
     availableIdes: Ide[];
-    clearAndRescanAvailableIdes: typeof appActions.clearAndRescanAvailableIdes;
+    clearAvailableIdes: typeof appActions.clearAvailableIdes;
 }
 
 interface State {
@@ -183,7 +182,7 @@ class IdeSearcher extends PureComponent<IdeSearcherProps, State> {
     };
 
     private _requestIdes = () => {
-        this.props.clearAndRescanAvailableIdes();
+        this.props.clearAvailableIdes();
         ipcRenderer.send('requestAvailableIdes');
     };
 
@@ -197,7 +196,7 @@ const mapStateToProps = (state: RootState) => ({
     availableIdes: state.app.availableIdes,
 });
 const mapDispatchToProps = {
-    clearAndRescanAvailableIdes: appActions.clearAndRescanAvailableIdes,
+    clearAvailableIdes: appActions.clearAvailableIdes,
 };
 export default connect(mapStateToProps, mapDispatchToProps)(IdeSearcher);
 

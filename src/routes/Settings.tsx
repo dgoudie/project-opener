@@ -37,6 +37,7 @@ interface State {
 
 type Props = {
     theme: AppTheme;
+    setupComplete: boolean;
 } & RouteComponentProps<any>;
 
 class Settings extends Component<Props, State> {
@@ -51,9 +52,10 @@ class Settings extends Component<Props, State> {
 
     public render() {
         const { redirectToHome, activeRoute } = this.state;
-        // if (!setupComplete) {
-        //     return <Redirect to='/setup/start' />;
-        // }
+        const { setupComplete } = this.props;
+        if (!setupComplete) {
+            return <Redirect to='/setup/start' />;
+        }
         if (!!redirectToHome) {
             return <Redirect to='/' />;
         }
@@ -196,6 +198,7 @@ class Settings extends Component<Props, State> {
 
 const mapStateToProps = (state: RootState) => ({
     theme: state.app.theme,
+    setupComplete: state.settings.setupComplete,
 });
 const mapDispatchToProps = {};
 export default withRouter(
