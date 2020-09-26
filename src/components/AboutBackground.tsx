@@ -125,7 +125,10 @@ const buildClasses = (theme: AppTheme) => {
     return mergeStyleSets({
         root: {
             position: 'absolute',
-            bottom: 70,
+            top: '-126px',
+            height: '120%',
+            left: '0',
+            width: '120%',
             pointerEvents: 'none',
         },
         home: { clipPath: 'url(#cache)' },

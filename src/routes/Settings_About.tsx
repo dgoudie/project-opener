@@ -33,6 +33,7 @@ class About extends PureComponent<Props, {}> {
                     <Text className={classes.version}>
                         Version {packageJson.version}
                     </Text>
+                    <AboutBackground theme={this.props.theme} />
                 </div>
                 <div className={classes.meta}>
                     <Text className={classes.metaText}>
@@ -47,7 +48,6 @@ class About extends PureComponent<Props, {}> {
                         {packageJson.repository.url}
                     </Link>
                 </div>
-                <AboutBackground theme={this.props.theme} />
             </div>
         );
     }
@@ -76,6 +76,7 @@ const buildClasses = (theme: AppTheme) => {
             justifyContent: 'center',
             flex: 1,
             paddingBottom: 64,
+            position: 'relative',
         },
         icon: {
             height: 200,

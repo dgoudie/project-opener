@@ -60,7 +60,6 @@ class Settings extends Component<Props, State> {
             return <Redirect to='/' />;
         }
         const classes = buildClasses(this.props.theme);
-        const { url } = this.props.match;
         return (
             <div className={classes.root}>
                 <SettingsNav activeRoute={activeRoute} />
@@ -136,17 +135,17 @@ class Settings extends Component<Props, State> {
                         )}
                     </div>
                     <Switch>
-                        <Route path={`${url}/general`} component={General} />
+                        <Route path={`/settings/general`} component={General} />
                         <Route
-                            path={`${url}/directories`}
+                            path={`/settings/directories`}
                             component={Directories}
                         />
                         <Route
-                            path={`${url}/filtered-patterns`}
+                            path={`/settings/filtered-patterns`}
                             component={FilteredPatterns}
                         />
-                        <Route path={`${url}/ides`} component={IDEs} />
-                        <Route path={`${url}/about`} component={About} />
+                        <Route path={`/settings/ides`} component={IDEs} />
+                        <Route path={`/settings/about`} component={About} />
                     </Switch>
                 </div>
             </div>

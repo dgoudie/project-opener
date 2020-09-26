@@ -1,10 +1,5 @@
 import { AppTheme, Project } from 'src/types';
 import { ITextField, mergeStyleSets } from '@fluentui/react';
-import {
-    MotionAnimations,
-    MotionDurations,
-    MotionTimings,
-} from '@uifabric/fluent-theme';
 import React, { Component } from 'react';
 import { Subscription, fromEvent, merge, partition } from 'rxjs';
 
@@ -249,9 +244,6 @@ const buildClasses = () => {
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',
-            animation: MotionAnimations.slideUpIn,
-            animationDuration: MotionDurations.duration3,
-            animationTimingFunction: MotionTimings.decelerate,
         },
     });
 };

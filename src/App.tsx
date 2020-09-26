@@ -3,24 +3,24 @@ import './App.module.scss';
 import * as React from 'react';
 
 import {
-    Redirect,
-    Route,
-    RouteComponentProps,
-    Switch,
-    withRouter,
-} from 'react-router-dom';
+    MotionAnimations,
+    MotionDurations,
+    MotionTimings,
+} from '@uifabric/fluent-theme';
+import { Route, RouteComponentProps, withRouter } from 'react-router-dom';
 import { initializeIcons, mergeStyleSets } from '@fluentui/react';
 
 import { AppTheme } from 'src/types';
+import { CSSTransition } from 'react-transition-group'; // ES6
 import ExceptionViewer from 'src/components/ExceptionViewer';
 import Home from './routes/Home';
 import { RootState } from 'src/redux/store/types';
 import Settings from 'src/routes/Settings';
 import Setup from 'src/routes/Setup';
 import { appActions } from 'src/redux/features/app';
+import classnames from 'classnames';
 import { connect } from 'react-redux';
 import { initListeners } from 'src/ipc-handler';
-import { ipcRenderer } from 'electron';
 import { requestSettingsFromMainProcess } from 'src/utils/load-settings';
 import store from 'src/redux/store';
 
@@ -43,13 +43,78 @@ class App extends React.Component<Props, {}> {
             return null;
         }
         const classes = buildClasses(theme);
+        const routes = [
+            {
+                baseClass: classes.home,
+                enterClass: classes.homeEnter,
+                enterActiveClass: classes.homeEnterActive,
+                exitClass: classes.homeExit,
+                exitActiveClass: classes.homeExitActive,
+                path: '/',
+                Component: Home,
+                exact: true,
+            },
+            {
+                baseClass: classes.settingsSetup,
+                enterClass: classes.settingsSetupEnter,
+                enterActiveClass: classes.settingsSetupEnterActive,
+                exitClass: classes.settingsSetupExit,
+                exitActiveClass: classes.settingsSetupExitActive,
+                path: '/settings',
+                Component: Settings,
+                exact: false,
+            },
+            {
+                baseClass: classes.settingsSetup,
+                enterClass: classes.settingsSetupEnter,
+                enterActiveClass: classes.settingsSetupEnterActive,
+                exitClass: classes.settingsSetupExit,
+                exitActiveClass: classes.settingsSetupExitActive,
+                path: '/setup',
+                Component: Setup,
+                exact: false,
+            },
+        ];
         return (
             <div className={classes.app} tabIndex={0}>
-                <Switch>
-                    <Route exact path='/' component={Home} />
-                    <Route path='/settings' component={Settings} />
-                    <Route path='/setup' component={Setup} />
-                </Switch>
+                {routes.map((route) => (
+                    <Route
+                        key={route.path}
+                        exact={route.exact}
+                        path={route.path}
+                    >
+                        {({ match }: { match: any }) => (
+                            <CSSTransition
+                                in={match != null}
+                                timeout={350}
+                                classNames={{
+                                    enter: route.enterClass,
+                                    enterActive: classnames(
+                                        route.enterActiveClass,
+                                        classes.commonActive
+                                    ),
+                                    enterDone: classes.commonDone,
+                                    exit: route.exitClass,
+                                    exitActive: classnames(
+                                        route.exitActiveClass,
+                                        classes.commonActive
+                                    ),
+                                    exitDone: classes.commonDone,
+                                }}
+                                unmountOnExit
+                            >
+                                <div
+                                    className={classnames(
+                                        route.baseClass,
+                                        classes.route
+                                    )}
+                                >
+                                    <route.Component />
+                                </div>
+                            </CSSTransition>
+                        )}
+                    </Route>
+                ))}
                 <ExceptionViewer />
             </div>
         );
@@ -88,5 +153,29 @@ const buildClasses = (theme: AppTheme) => {
             height: '100%',
             backgroundColor: theme.semanticColors.bodyBackground,
         },
+        route: {
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            bottom: 0,
+            right: 0,
+            backgroundColor: theme.semanticColors.bodyBackground,
+        },
+        commonActive: {
+            pointerEvents: 'none',
+        },
+        commonDone: {
+            pointerEvents: 'initial',
+        },
+        home: { transition: 'opacity 250ms, transform 250ms' },
+        homeEnter: { opacity: 0, transform: 'scale(0.93)' },
+        homeEnterActive: { opacity: 1, transform: 'scale(1)' },
+        homeExit: { opacity: 1, transform: 'scale(1)' },
+        homeExitActive: { opacity: 0, transform: 'scale(0.93)' },
+        settingsSetup: { transition: 'opacity 250ms, transform 250ms' },
+        settingsSetupEnter: { opacity: 0, transform: 'scale(1.07)' },
+        settingsSetupEnterActive: { opacity: 1, transform: 'scale(1)' },
+        settingsSetupExit: { opacity: 1, transform: 'scale(1)' },
+        settingsSetupExitActive: { opacity: 0, transform: 'scale(1.07)' },
     });
 };
