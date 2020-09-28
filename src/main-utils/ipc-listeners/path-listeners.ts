@@ -17,17 +17,16 @@ const setupListeners = () => {
         );
     });
     ipcMain.on('scanPath', (event, path: string) => {
-        scanPathAndUpdateDatabase(path, event).subscribe(
-            null,
-            (err: Error) =>
+        scanPathAndUpdateDatabase(path, event).subscribe({
+            error: (err: Error) =>
                 reportException(
                     event,
                     new AppException(err.message, err.stack)
                 ),
-            () => {
+            complete: () => {
                 event.reply('scanPathComplete', path);
-            }
-        );
+            },
+        });
     });
     ipcMain.on('removeProjectsByPath', (event, path: string) => {
         removeProjectsByPath(path).subscribe(

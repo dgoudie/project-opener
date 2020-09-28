@@ -1,5 +1,5 @@
 import { Ide, ProjectType } from 'src/types';
-import { Observable, forkJoin, of } from 'rxjs';
+import { Observable, Subject, forkJoin, of } from 'rxjs';
 import {
     getSetting as getSettingFromRepository,
     writeSetting as writeSettingToRepository,
@@ -67,5 +67,11 @@ export function writeSetting(key: keyof SettingsState, value: any) {
     console.debug(
         `writeSetting() value ${JSON.stringify(value)} for setting ${key}`
     );
-    return writeSettingToRepository(key, value);
+    return writeSettingToRepository(key, value).pipe(
+        tap(() => settingChanged$.next(key))
+    );
 }
+
+const settingChanged$ = new Subject<keyof SettingsState>();
+
+export const settingsChangedUpdates = () => settingChanged$;

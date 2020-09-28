@@ -4,5 +4,5 @@ export const reportException = (
     event: Electron.IpcMainEvent,
     exception: AppException
 ) => {
-    event.reply('exception', exception);
+    !!event && event.reply('exception', exception);
 };

@@ -15,6 +15,7 @@ import {
     mergeMap,
     reduce,
     switchMap,
+    switchMapTo,
     tap,
 } from 'rxjs/operators';
 import {
@@ -73,7 +74,8 @@ export function scanPathAndUpdateDatabase(
                 ]),
                 setChildren()
             )
-        )
+        ),
+        switchMapTo(of(null))
     );
 }
 

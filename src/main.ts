@@ -3,6 +3,7 @@ import { setupServices, tearDownServices } from 'src/main-utils/ipc-listeners';
 
 import isDev from 'electron-is-dev';
 import path from 'path';
+import { setupJobs } from 'src/main-utils/jobs';
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: any;
 
@@ -76,6 +77,7 @@ if (require('electron-squirrel-startup') || !gotTheLock) {
     // Some APIs can only be used after this event occurs.
     app.on('ready', () => {
         setupServices();
+        setupJobs();
         createWindow();
     });
 
