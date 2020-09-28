@@ -2,11 +2,6 @@ import './App.module.scss';
 
 import * as React from 'react';
 
-import {
-    MotionAnimations,
-    MotionDurations,
-    MotionTimings,
-} from '@uifabric/fluent-theme';
 import { Route, RouteComponentProps, withRouter } from 'react-router-dom';
 import { initializeIcons, mergeStyleSets } from '@fluentui/react';
 
@@ -86,7 +81,7 @@ class App extends React.Component<Props, {}> {
                         {({ match }: { match: any }) => (
                             <CSSTransition
                                 in={match != null}
-                                timeout={350}
+                                timeout={250}
                                 classNames={{
                                     enter: route.enterClass,
                                     enterActive: classnames(
@@ -167,12 +162,18 @@ const buildClasses = (theme: AppTheme) => {
         commonDone: {
             pointerEvents: 'initial',
         },
-        home: { transition: 'opacity 250ms, transform 250ms' },
+        home: {
+            transition:
+                'opacity 200ms cubic-bezier(0.0, 0.0, 0.2, 1), transform 200ms cubic-bezier(0.0, 0.0, 0.2, 1)',
+        },
         homeEnter: { opacity: 0, transform: 'scale(0.93)' },
         homeEnterActive: { opacity: 1, transform: 'scale(1)' },
         homeExit: { opacity: 1, transform: 'scale(1)' },
         homeExitActive: { opacity: 0, transform: 'scale(0.93)' },
-        settingsSetup: { transition: 'opacity 250ms, transform 250ms' },
+        settingsSetup: {
+            transition:
+                'opacity 200ms cubic-bezier(0.0, 0.0, 0.2, 1), transform 200ms cubic-bezier(0.0, 0.0, 0.2, 1)',
+        },
         settingsSetupEnter: { opacity: 0, transform: 'scale(1.07)' },
         settingsSetupEnterActive: { opacity: 1, transform: 'scale(1)' },
         settingsSetupExit: { opacity: 1, transform: 'scale(1)' },

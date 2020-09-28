@@ -12,27 +12,32 @@ import {
     mergeStyleSets,
 } from '@fluentui/react';
 import React, { Component } from 'react';
-import { Redirect, Route, Switch, match, withRouter } from 'react-router';
+import { Redirect, Route, withRouter } from 'react-router';
 import { SettingsRoute, settingsRoutes } from '../utils/settings-routes';
 import { Subscription, fromEvent } from 'rxjs';
 
-import About from './Settings_About';
 import { AppTheme } from 'src/types';
-import Directories from './Settings_Directories';
-import FilteredPatterns from './Settings_FilteredPatterns';
-import General from './Settings_General';
-import IDEs from './Settings_IDEs';
+import { CSSTransition } from 'react-transition-group';
 import { Location } from 'history';
 import { RootState } from 'src/redux/store/types';
 import { RouteComponentProps } from 'react-router-dom';
 import SettingsNav from 'src/components/SettingsNav';
+import { ValueOf } from 'src/utils/value-of';
+import classnames from 'classnames';
 import { connect } from 'react-redux';
 import { exitApplication } from 'src/utils/show-hide';
+import { isDefined } from 'src/utils/defined';
 
 interface State {
     confirmExitVisible: boolean;
     redirectToHome: boolean;
     activeRoute: SettingsRoute;
+    classes: ReturnType<typeof buildClasses>;
+    routes: SettingsRoute[];
+    enterClass: string;
+    enterActiveClass: string;
+    exitClass: string;
+    exitActiveClass: string;
 }
 
 type Props = {
@@ -41,17 +46,32 @@ type Props = {
 } & RouteComponentProps<any>;
 
 class Settings extends Component<Props, State> {
-    public readonly state: State = {
-        confirmExitVisible: false,
-        redirectToHome: false,
-        activeRoute: settingsRoutes[0],
-    };
+    constructor(props: Props) {
+        super(props);
+        this.keyHandlerSubscription = this.setupKeyHandler();
+        const activeRoute = this._getActiveRouteFromLocation(
+            this.props.location
+        );
+        const classes = buildClasses(this.props.theme);
+        const routes = settingsRoutes;
+        this.state = {
+            confirmExitVisible: false,
+            redirectToHome: false,
+            activeRoute,
+            classes,
+            routes,
+            enterClass: null,
+            enterActiveClass: null,
+            exitClass: null,
+            exitActiveClass: null,
+        };
+    }
     private exitButtonWrapperRef = React.createRef<HTMLDivElement>();
 
     private keyHandlerSubscription: Subscription;
 
     public render() {
-        const { redirectToHome, activeRoute } = this.state;
+        const { redirectToHome, activeRoute, classes, routes } = this.state;
         const { setupComplete } = this.props;
         if (!setupComplete) {
             return <Redirect to='/setup/start' />;
@@ -59,7 +79,6 @@ class Settings extends Component<Props, State> {
         if (!!redirectToHome) {
             return <Redirect to='/' />;
         }
-        const classes = buildClasses(this.props.theme);
         return (
             <div className={classes.root}>
                 <SettingsNav activeRoute={activeRoute} />
@@ -134,43 +153,95 @@ class Settings extends Component<Props, State> {
                             </FocusTrapCallout>
                         )}
                     </div>
-                    <Switch>
-                        <Route path={`/settings/general`} component={General} />
-                        <Route
-                            path={`/settings/directories`}
-                            component={Directories}
-                        />
-                        <Route
-                            path={`/settings/filtered-patterns`}
-                            component={FilteredPatterns}
-                        />
-                        <Route path={`/settings/ides`} component={IDEs} />
-                        <Route path={`/settings/about`} component={About} />
-                    </Switch>
+                    <div className={classes.routeWrapper}>
+                        {routes.map((route) => (
+                            <Route
+                                key={route.key}
+                                path={route.url.replace('#', '')}
+                            >
+                                {({ match }: { match: any }) => (
+                                    <CSSTransition
+                                        in={match != null}
+                                        timeout={250}
+                                        classNames={{
+                                            enter: this.state.enterClass,
+                                            enterActive: classnames(
+                                                this.state.enterActiveClass
+                                            ),
+                                            exit: this.state.exitClass,
+                                            exitActive: classnames(
+                                                this.state.exitActiveClass
+                                            ),
+                                        }}
+                                        unmountOnExit
+                                    >
+                                        <div className={classes.rootRoute}>
+                                            <route.Component />
+                                        </div>
+                                    </CSSTransition>
+                                )}
+                            </Route>
+                        ))}
+                    </div>
                 </div>
             </div>
         );
     }
 
-    public componentDidMount() {
-        this._getActiveRouteFromLocation(this.props.location);
-        this.keyHandlerSubscription = this.setupKeyHandler();
+    public componentDidUpdate(oldProps: Props) {
+        if (oldProps.theme !== this.props.theme) {
+            this.setState({ classes: buildClasses(this.props.theme) });
+        }
     }
 
     public componentWillUnmount() {
         this.keyHandlerSubscription.unsubscribe();
     }
 
+    private _getRouteIndex(route: SettingsRoute, routes: SettingsRoute[]) {
+        return routes.findIndex((r) => r.key === route.key);
+    }
+
+    private _setRouteClasses = (
+        classes: ReturnType<typeof buildClasses>,
+        prevRouteIndex: number,
+        nextRouteIndex: number
+    ) => {
+        if (isDefined(prevRouteIndex)) {
+            if (nextRouteIndex > prevRouteIndex) {
+                this.setState({
+                    enterClass: classes.greaterRouteEnter,
+                    enterActiveClass: classes.greaterRouteEnterActive,
+                    exitClass: classes.greaterRouteExit,
+                    exitActiveClass: classes.greaterRouteExitActive,
+                });
+            } else if (nextRouteIndex < prevRouteIndex) {
+                this.setState({
+                    enterClass: classes.lesserRouteEnter,
+                    enterActiveClass: classes.lesserRouteEnterActive,
+                    exitClass: classes.lesserRouteExit,
+                    exitActiveClass: classes.lesserRouteExitActive,
+                });
+            }
+        }
+    };
+
     private _onLinkClick = (
         _ev?: React.MouseEvent<HTMLElement, MouseEvent> | undefined,
         navLink?: INavLink
     ) => {
-        if (!navLink) {
+        if (!navLink || navLink.key === this.state.activeRoute.key) {
             return;
         }
+        const oldRouteIndex = this._getRouteIndex(
+            this.state.activeRoute,
+            settingsRoutes
+        );
         const activeRoute = settingsRoutes.find(
             (route) => route.key === navLink.key
         );
+        const newRouteIndex = this._getRouteIndex(activeRoute, settingsRoutes);
+        this._setRouteClasses(this.state.classes, oldRouteIndex, newRouteIndex);
         !!activeRoute && this.setState({ activeRoute });
     };
 
@@ -191,7 +262,7 @@ class Settings extends Component<Props, State> {
         const activeRoute = settingsRoutes.find(
             (route) => route.key === selectedKey
         );
-        !!activeRoute && this.setState({ activeRoute });
+        return activeRoute;
     };
 }
 
@@ -222,7 +293,6 @@ const buildClasses = (theme: ITheme | null) => {
         },
         body: {
             display: 'flex',
-            flexDirection: 'row',
             height: '100%',
             flex: 1,
             overflow: 'hidden',
@@ -283,5 +353,49 @@ const buildClasses = (theme: ITheme | null) => {
                 fontWeight: FontWeights.semilight,
             },
         ],
+        routeWrapper: {
+            position: 'relative',
+            display: 'flex',
+            alignSelf: 'stretch',
+            flexDirection: 'row',
+            flex: 1,
+        },
+        rootRoute: {
+            position: 'absolute',
+            display: 'flex',
+            top: 0,
+            left: 0,
+            bottom: 0,
+            right: 0,
+            backgroundColor: theme.semanticColors.bodyBackground,
+        },
+        greaterRouteEnter: { opacity: 0, transform: 'translateY(7%)' },
+        greaterRouteEnterActive: {
+            opacity: 1,
+            transform: 'translateY(0)',
+            transition:
+                'opacity 200ms cubic-bezier(0.0, 0.0, 0.2, 1), transform 200ms cubic-bezier(0.0, 0.0, 0.2, 1)',
+        },
+        greaterRouteExit: { opacity: 1, transform: 'translateY(0)' },
+        greaterRouteExitActive: {
+            opacity: 0,
+            transform: 'translateY(-7%)',
+            transition:
+                'opacity 200ms cubic-bezier(0.0, 0.0, 0.2, 1), transform 200ms cubic-bezier(0.0, 0.0, 0.2, 1)',
+        },
+        lesserRouteEnter: { opacity: 0, transform: 'translateY(-7%)' },
+        lesserRouteEnterActive: {
+            opacity: 1,
+            transform: 'translateY(0)',
+            transition:
+                'opacity 200ms cubic-bezier(0.0, 0.0, 0.2, 1), transform 200ms cubic-bezier(0.0, 0.0, 0.2, 1)',
+        },
+        lesserRouteExit: { opacity: 1, transform: 'translateY(0)' },
+        lesserRouteExitActive: {
+            opacity: 0,
+            transform: 'translateY(7%)',
+            transition:
+                'opacity 200ms cubic-bezier(0.0, 0.0, 0.2, 1), transform 200ms cubic-bezier(0.0, 0.0, 0.2, 1)',
+        },
     });
 };

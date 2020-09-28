@@ -1,4 +1,4 @@
-import { Observable, forkJoin, from, merge, throwError } from 'rxjs';
+import { EMPTY, Observable, forkJoin, from, merge, throwError } from 'rxjs';
 import { concatMap, filter, map, reduce, tap } from 'rxjs/operators';
 import electron, { dialog } from 'electron';
 
@@ -11,7 +11,7 @@ let scanning = false;
 
 export const findAvailableIdes = () => {
     if (scanning) {
-        return throwError('Scanning already in progress.');
+        return EMPTY;
     }
     scanning = true;
     return merge(findIntellijIdes(), findVsCodeIdes(), findWebStormIdes()).pipe(

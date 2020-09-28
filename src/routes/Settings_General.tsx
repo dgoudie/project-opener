@@ -12,11 +12,6 @@ import {
     TooltipHost,
 } from 'office-ui-fabric-react';
 import { FontSizes, ITheme, mergeStyleSets } from '@uifabric/styling';
-import {
-    MotionAnimations,
-    MotionDurations,
-    MotionTimings,
-} from '@uifabric/fluent-theme';
 import React, { Component, FormEvent } from 'react';
 import { decodeHotKey, encodeHotKey } from 'src/utils/hotkey-tools';
 
@@ -245,9 +240,6 @@ const buildClasses = (theme: ITheme | null) => {
             flex: 1,
             overflowY: 'auto',
             padding: '0 16px 16px 16px',
-            animation: MotionAnimations.slideDownIn,
-            animationDuration: MotionDurations.duration3,
-            animationTimingFunction: MotionTimings.decelerate,
         },
         section: {
             display: 'flex',

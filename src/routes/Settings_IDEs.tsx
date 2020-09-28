@@ -1,9 +1,4 @@
 import { FontSizes, ITheme, mergeStyleSets } from '@uifabric/styling';
-import {
-    MotionAnimations,
-    MotionDurations,
-    MotionTimings,
-} from '@uifabric/fluent-theme';
 import React, { Component } from 'react';
 
 import { AppTheme } from 'src/types';
@@ -51,9 +46,6 @@ const buildClasses = (theme: ITheme | null) => {
             flexDirection: 'column',
             padding: '12px 16px 16px',
             overflowX: 'hidden',
-            animation: MotionAnimations.slideDownIn,
-            animationDuration: MotionDurations.duration3,
-            animationTimingFunction: MotionTimings.decelerate,
         },
         pageTitle: {
             fontSize: FontSizes.large,

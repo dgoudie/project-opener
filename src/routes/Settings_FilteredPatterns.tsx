@@ -1,10 +1,5 @@
 import { FontSizes, ITheme, mergeStyleSets } from '@uifabric/styling';
 import { Link, Text } from 'office-ui-fabric-react';
-import {
-    MotionAnimations,
-    MotionDurations,
-    MotionTimings,
-} from '@uifabric/fluent-theme';
 import React, { Component } from 'react';
 
 import { AppTheme } from 'src/types';
@@ -60,9 +55,6 @@ const buildClasses = (theme: ITheme | null) => {
             display: 'flex',
             flexDirection: 'column',
             padding: '12px 16px 16px',
-            animation: MotionAnimations.slideDownIn,
-            animationDuration: MotionDurations.duration3,
-            animationTimingFunction: MotionTimings.decelerate,
         },
         pageTitle: {
             fontSize: FontSizes.large,
