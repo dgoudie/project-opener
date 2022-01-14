@@ -13,34 +13,61 @@ import {
     HorizontalRuleIcon,
     SyncIcon,
 } from '@primer/octicons-react';
+import React, { useEffect, useRef } from 'react';
 
-import React from 'react';
+import { useDebounce } from '@react-hook/debounce';
+import { useParams } from 'react-router-dom';
 
-export default function TopBar() {
+interface Props {
+    searchTextChanged: (value: string) => void;
+}
+
+export default function TopBar({ searchTextChanged }: Props) {
+    const { filter } = useParams();
+
+    const textInputRef = useRef<HTMLInputElement>(null);
+
+    const [searchText, setSearchText] = useDebounce('', 300);
+
+    useEffect(() => {
+        searchTextChanged(searchText);
+    }, [searchText]);
+
+    useEffect(() => {
+        textInputRef.current.focus();
+    }, [filter, textInputRef]);
+
     return (
         <Box
-            padding='.75em'
+            padding='.75rem'
             style={{
                 //@ts-ignore
                 WebkitAppRegion: 'drag',
             }}
             display='grid'
-            gridTemplateColumns='auto max-content max-content'
+            gridTemplateColumns='1fr max-content max-content'
             alignItems='center'
-            gridGap='1em'
+            gridGap='1rem'
         >
-            <TextInput
-                leadingVisual='Search 100 projects for:'
-                autoFocus
+            <Box
                 style={{
                     //@ts-ignore
                     WebkitAppRegion: 'no-drag',
                 }}
-            />
+            >
+                <TextInput
+                    block
+                    leadingVisual='Search 100 projects for:'
+                    onChange={(event: InputEvent) =>
+                        setSearchText((event.target as HTMLInputElement).value)
+                    }
+                    ref={textInputRef}
+                />
+            </Box>
             <Box
                 display='grid'
                 alignItems='center'
-                gridGap='.5em'
+                gridGap='.5rem'
                 gridAutoFlow='column'
                 style={{ userSelect: 'none' }}
             >
@@ -60,7 +87,7 @@ function TopBarButtons() {
         display: 'grid',
         gridAutoFlow: 'column',
         alignItems: 'center',
-        gap: '.2em',
+        gap: '.2rem',
     };
     return (
         <>
@@ -71,7 +98,7 @@ function TopBarButtons() {
                 }}
                 display='grid'
                 alignItems='center'
-                gridGap='.25em'
+                gridGap='.25rem'
                 gridAutoFlow='column'
             >
                 <Box position='relative'>

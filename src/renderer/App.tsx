@@ -11,16 +11,16 @@ export default function App() {
         {
             light: primatives.colors.light.scale.gray[1],
             dark: primatives.colors.dark.scale.gray[9],
-            dark_dimmed: primatives.colors.dark_dimmed.scale.gray[2],
         },
-        'white'
+        primatives.colors.light.scale.gray[1]
     );
     return (
         <Box bg={boxBackground} height='100vh'>
             <HashRouter basename='/'>
                 <Routes>
-                    <Route path='/' element={<Home />} />
                     <Route path='/settings/*' element={<Settings />} />
+                    <Route path='/:filter' element={<Home />} />
+                    <Route path='/' element={<Home />} />
                 </Routes>
             </HashRouter>
         </Box>
