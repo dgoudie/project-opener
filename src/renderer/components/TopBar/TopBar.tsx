@@ -42,6 +42,7 @@ export default function TopBar() {
                 alignItems='center'
                 gridGap='.5em'
                 gridAutoFlow='column'
+                style={{ userSelect: 'none' }}
             >
                 <Box height={20}>
                     <img src='/assets/logo.png' height={'100%'}></img>
@@ -73,44 +74,39 @@ function TopBarButtons() {
                 gridGap='.25em'
                 gridAutoFlow='column'
             >
-                <Tooltip aria-label='Scan Directories' direction='s'>
-                    <Box position='relative'>
-                        <SelectMenu>
-                            <ButtonInvisible style={buttonStyles} as='summary'>
-                                <SyncIcon size={18} />
-                                <ChevronDownIcon
-                                    size={16}
-                                    verticalAlign='middle'
-                                />
-                            </ButtonInvisible>
-                            <SelectMenu.Modal align='right'>
-                                <SelectMenu.Header>
-                                    Scan Directories
-                                </SelectMenu.Header>
-                                <SelectMenu.List>
-                                    <SelectMenu.Item href='#'>
-                                        Primer React bugs
-                                    </SelectMenu.Item>
-                                    <SelectMenu.Item href='#'>
-                                        Primer React roadmap
-                                    </SelectMenu.Item>
-                                    <SelectMenu.Item href='#'>
-                                        {' '}
-                                        Project 3
-                                    </SelectMenu.Item>
-                                    <SelectMenu.Item href='#'>
-                                        Project 4
-                                    </SelectMenu.Item>
-                                </SelectMenu.List>
-                            </SelectMenu.Modal>
-                        </SelectMenu>
-                    </Box>
-                </Tooltip>
+                <Box position='relative'>
+                    <SelectMenu>
+                        <ButtonInvisible style={buttonStyles} as='summary'>
+                            <SyncIcon size={18} />
+                            <ChevronDownIcon size={16} verticalAlign='middle' />
+                        </ButtonInvisible>
+                        <SelectMenu.Modal align='right'>
+                            <SelectMenu.Header>
+                                Scan Directories
+                            </SelectMenu.Header>
+                            <SelectMenu.List>
+                                <SelectMenu.Item href='#'>
+                                    Primer React bugs
+                                </SelectMenu.Item>
+                                <SelectMenu.Item href='#'>
+                                    Primer React roadmap
+                                </SelectMenu.Item>
+                                <SelectMenu.Item href='#'>
+                                    {' '}
+                                    Project 3
+                                </SelectMenu.Item>
+                                <SelectMenu.Item href='#'>
+                                    Project 4
+                                </SelectMenu.Item>
+                            </SelectMenu.List>
+                        </SelectMenu.Modal>
+                    </SelectMenu>
+                </Box>
                 <Tooltip aria-label='Settings' direction='s'>
                     <ButtonInvisible
                         style={buttonStyles}
                         as='a'
-                        href='#/settings'
+                        href='#/settings/general'
                     >
                         <GearIcon size={18} />
                     </ButtonInvisible>

@@ -17,10 +17,10 @@ export default function App() {
     );
     return (
         <Box bg={boxBackground} height='100vh'>
-            <HashRouter>
+            <HashRouter basename='/'>
                 <Routes>
                     <Route path='/' element={<Home />} />
-                    <Route path='/settings' element={<Settings />} />
+                    <Route path='/settings/*' element={<Settings />} />
                 </Routes>
             </HashRouter>
         </Box>

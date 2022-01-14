@@ -51,8 +51,8 @@
                             "config": "./webpack.renderer.config.js",
                             "entryPoints": [
                                 {
-                                    "html": "./src/renderer.html",
-                                    "js": "./src/renderer.tsx",
+                                    "html": "./src/renderer/renderer.html",
+                                    "js": "./src/renderer/renderer.tsx",
                                     "name": "project_opener"
                                 }
                             ]
