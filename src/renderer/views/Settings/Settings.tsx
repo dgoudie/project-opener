@@ -19,8 +19,9 @@ import {
     InfoIcon,
     XIcon,
 } from '@primer/octicons-react';
-import { Route, Routes, useLocation } from 'react-router-dom';
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 
+import KeyPressHandler from '../../components/KeyPressHandler/KeyPressHandler';
 import React from 'react';
 import Settings_FilteredPatterns from './Settings_FilteredPatterns';
 import Settings_General from './Settings_General';
@@ -56,54 +57,66 @@ const settingsRoutes = [
 ];
 
 export default function Settings() {
+    const navigate = useNavigate();
     return (
-        <Box display='grid' gridTemplateRows='max-content auto' height='100%'>
+        <>
+            <KeyPressHandler onEscape={() => navigate('/')} />
             <Box
-                bg='canvas.subtle'
-                padding='.5rem'
-                style={{
-                    //@ts-ignore
-                    WebkitAppRegion: 'drag',
-                }}
+                display='grid'
+                gridTemplateRows='max-content auto'
+                height='100%'
             >
-                <ButtonInvisible
-                    as='a'
-                    href='#/'
+                <Box
+                    bg='canvas.subtle'
+                    padding='.5rem'
                     style={{
-                        justifySelf: 'start',
-                        cursor: 'pointer',
                         //@ts-ignore
-                        WebkitAppRegion: 'no-drag',
+                        WebkitAppRegion: 'drag',
                     }}
                 >
-                    <Box
-                        display='grid'
-                        gridGap='.25rem'
-                        gridAutoFlow='column'
-                        alignItems='center'
+                    <ButtonInvisible
+                        as='a'
+                        href='#/'
+                        style={{
+                            justifySelf: 'start',
+                            cursor: 'pointer',
+                            //@ts-ignore
+                            WebkitAppRegion: 'no-drag',
+                        }}
                     >
-                        <ChevronLeftIcon />
-                        <span>Home</span>
+                        <Box
+                            display='grid'
+                            gridGap='.25rem'
+                            gridAutoFlow='column'
+                            alignItems='center'
+                        >
+                            <ChevronLeftIcon />
+                            <span>Home</span>
+                        </Box>
+                    </ButtonInvisible>
+                </Box>
+                <Box
+                    display='grid'
+                    gridTemplateColumns='15rem auto'
+                    minHeight={0}
+                >
+                    <SettingsNav />
+                    <Box minHeight={0}>
+                        <Routes>
+                            {settingsRoutes.map((route) => (
+                                <Route
+                                    key={route.pathname}
+                                    path={route.pathname}
+                                    element={route.element}
+                                >
+                                    {route.name}
+                                </Route>
+                            ))}
+                        </Routes>
                     </Box>
-                </ButtonInvisible>
-            </Box>
-            <Box display='grid' gridTemplateColumns='15rem auto' minHeight={0}>
-                <SettingsNav />
-                <Box minHeight={0}>
-                    <Routes>
-                        {settingsRoutes.map((route) => (
-                            <Route
-                                key={route.pathname}
-                                path={route.pathname}
-                                element={route.element}
-                            >
-                                {route.name}
-                            </Route>
-                        ))}
-                    </Routes>
                 </Box>
             </Box>
-        </Box>
+        </>
     );
 }
 

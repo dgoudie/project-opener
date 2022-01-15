@@ -1,0 +1,10 @@
+export const ADD_NOTIFICATION = '@app/ADD_NOTIFICATION';
+export const DISMISS_NOTIFICATION = '@app/DISMISS_NOTIFICATION';
+export const ADD_EXCEPTION = '@app/ADD_EXCEPTION';
+export const DISMISS_EXCEPTION = '@app/DISMISS_EXCEPTION';
+export const SCAN_PATH = '@app/SCAN_PATH';
+export const SCAN_PATH_COMPLETE = '@app/SCAN_PATH_COMPLETE';
+export const SET_WINDOW_VISIBLE = '@app/SET_WINDOW_VISIBLE';
+export const SET_THEME = '@app/SET_THEME';
+export const SET_AVAILABLE_IDES = '@app/SET_AVAILABLE_IDES';
+export const CLEAR_AVAILABLE_IDES = '@app/CLEAR_AVAILABLE_IDES';

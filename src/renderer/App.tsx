@@ -1,7 +1,8 @@
-import { Box, useColorSchemeVar, useTheme } from '@primer/react';
-import { HashRouter, Route, Routes } from 'react-router-dom';
-import React, { useMemo } from 'react';
+import { Box, useColorSchemeVar } from '@primer/react';
+import { HashRouter, Route, Routes, useNavigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
 
+import FirstTimeSetupChecker from './components/FirstTimeSetupChecker/FirstTimeSetupChecker';
 import Home from './views/Home/Home';
 import Settings from './views/Settings/Settings';
 import primatives from '@primer/primitives';
@@ -17,6 +18,8 @@ export default function App() {
     return (
         <Box bg={boxBackground} height='100vh'>
             <HashRouter basename='/'>
+                <NavigateHomeListener />
+                <FirstTimeSetupChecker />
                 <Routes>
                     <Route path='/settings/*' element={<Settings />} />
                     <Route path='/:filter' element={<Home />} />
@@ -26,3 +29,12 @@ export default function App() {
         </Box>
     );
 }
+
+const NavigateHomeListener: React.FunctionComponent = () => {
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        window.bridgeApis.onNavigateHomeRequested(() => navigate('/'));
+    }, []);
+    return null;
+};
