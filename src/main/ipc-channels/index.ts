@@ -1,7 +1,4 @@
-import {
-    setup as setupIdeListeners,
-    tearDown as tearDownIdeListeners,
-} from './ide-listeners';
+import { removeListeners, setupListeners } from './ide-listeners';
 import {
     setup as setupPathListeners,
     tearDown as tearDownPathListeners,
@@ -18,13 +15,13 @@ import {
 export const setupServices = () => {
     setupProjectListeners();
     setupSettingsListeners();
-    setupIdeListeners();
+    setupListeners();
     setupPathListeners();
 };
 
 export const tearDownServices = () => {
     tearDownProjectListeners();
     tearDownSettingsListeners();
-    tearDownIdeListeners();
+    removeListeners();
     tearDownPathListeners();
 };

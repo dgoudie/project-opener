@@ -8,6 +8,7 @@ import { AppException } from './app-exception';
 import { Ide } from './ide';
 
 export type IpcChannelType = {
+    GET_SETTING: {};
     AVAILABLE_IDES: {
         request: void;
         response: Ide[];
