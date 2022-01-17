@@ -3,13 +3,13 @@ import '@fontsource/roboto-slab';
 import { BaseStyles, ThemeProvider } from '@primer/react';
 
 import App from './App';
+import { BRIDGE_APIS } from './bridge';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { bridgeApis } from './bridge';
 
 declare global {
     interface Window {
-        bridgeApis?: typeof bridgeApis;
+        BRIDGE_APIS?: typeof BRIDGE_APIS;
     }
 }
 

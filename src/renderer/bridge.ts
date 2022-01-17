@@ -1,22 +1,18 @@
-import {
-    CLOSE_APPLICATION,
-    HIDE_APPLICATION,
-    NAVIGATE_HOME,
-    REGISTER_SHOW_APPLICATION_HOTKEY,
-} from '../constants/ipc-renderer-constants';
 import { contextBridge, ipcRenderer } from 'electron';
 
-export const bridgeApis = {
-    closeApplication: () => ipcRenderer.send(CLOSE_APPLICATION),
-    hideApplication: () => ipcRenderer.send(HIDE_APPLICATION),
-    registerShowApplicationHotkey: (hotkey: string) =>
-        ipcRenderer.send(REGISTER_SHOW_APPLICATION_HOTKEY, hotkey),
+export const BRIDGE_APIS = {
+    sendIpcEvent: <T = any>(eventName: string, payload: T) =>
+        ipcRenderer.send(eventName, payload),
 
-    onNavigateHomeRequested: (_: () => void) =>
-        ipcRenderer.on(NAVIGATE_HOME, _),
+    addIpcEventListener: <T = any>(
+        eventName: string,
+        handler: (event: Electron.IpcRendererEvent, payload: T) => void
+    ) => ipcRenderer.on(eventName, handler),
 
-    removeNavigateHomeRequestedListener: (_: () => void) =>
-        ipcRenderer.removeListener(NAVIGATE_HOME, _),
+    removeIpcEventListener: <T = any>(
+        eventName: string,
+        handler: (event: Electron.IpcRendererEvent, payload: T) => void
+    ) => ipcRenderer.removeListener(eventName, handler),
 };
 
-contextBridge.exposeInMainWorld('bridgeApis', bridgeApis);
+contextBridge.exposeInMainWorld('BRIDGE_APIS', BRIDGE_APIS);
