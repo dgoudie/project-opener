@@ -12,6 +12,7 @@ export function getSetting<SETTING_KEY extends keyof Settings>(
     key: SETTING_KEY,
     defaultValue?: Settings[SETTING_KEY]
 ): Observable<Settings[SETTING_KEY] | undefined> {
+    console.log(key, defaultValue);
     return getSettingFromRepository(key).pipe(
         switchMap((value) => {
             if (value !== undefined) {

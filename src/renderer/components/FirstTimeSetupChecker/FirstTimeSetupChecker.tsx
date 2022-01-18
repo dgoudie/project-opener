@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 
-import { useIpcRequestResponse } from '../../hooks/use-ipc-two-way-request';
+import { useIpcRequestResponse } from '../../hooks/use-ipc-request-response';
 import { useNavigate } from 'react-router-dom';
 
 export default function FirstTimeSetupChecker(): null {
@@ -8,15 +8,19 @@ export default function FirstTimeSetupChecker(): null {
 
     const navigate = useNavigate();
 
+    const request = useMemo(
+        () => ({ key: 'HOTKEY', defaultValue: 'CommandOrControl+Shift+O' }),
+        []
+    );
+
     const { result } = useIpcRequestResponse(
-        'PROMPT_FOR_FILE',
-        undefined,
+        'GET_SETTING',
+        //@ts-ignore
+        request,
         date
     );
 
-    useEffect(() => {
-        console.log(result);
-    }, [result]);
+    console.log(result);
 
     return null;
 }

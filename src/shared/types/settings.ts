@@ -6,3 +6,17 @@ export type Settings = {
     IDES: Ide[];
     FILTERED_PATTERNS: string[];
 };
+
+export const settingsKeys: (keyof Settings)[] = [
+    'SETUP_COMPLETE',
+    'HOTKEY',
+    'IDES',
+    'FILTERED_PATTERNS',
+];
+
+// export type Settings = [
+//     { key: 'SETUP_COMPLETE'; valueType: boolean },
+//     { key: 'HOTKEY'; valueType: string },
+//     { key: 'IDES'; valueType: Ide[] },
+//     { key: 'FILTERED_PATTERNS'; valueType: string[] }
+// ];
