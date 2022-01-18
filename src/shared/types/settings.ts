@@ -13,10 +13,3 @@ export const settingsKeys: (keyof Settings)[] = [
     'IDES',
     'FILTERED_PATTERNS',
 ];
-
-// export type Settings = [
-//     { key: 'SETUP_COMPLETE'; valueType: boolean },
-//     { key: 'HOTKEY'; valueType: string },
-//     { key: 'IDES'; valueType: Ide[] },
-//     { key: 'FILTERED_PATTERNS'; valueType: string[] }
-// ];

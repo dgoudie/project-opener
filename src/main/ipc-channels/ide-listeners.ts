@@ -3,12 +3,16 @@ import { findAvailableIdes, promptForFile } from '../services/ide-service';
 import { IpcChannel } from '../../shared/types/channel';
 import { getSetting } from '../services/settings-service';
 import { ipcMain } from 'electron';
+import { settingsKeys } from '../../shared/types/settings';
 
 const channels = [
     new IpcChannel('AVAILABLE_IDES', () => findAvailableIdes()),
     new IpcChannel('PROMPT_FOR_FILE', () => promptForFile()),
-    new IpcChannel('GET_SETTING', ({ key, defaultValue }) =>
-        getSetting(key, defaultValue)
+    ...settingsKeys.map(
+        (settingKey) =>
+            new IpcChannel(`GET_SETTING_${settingKey}`, (defaultValue) =>
+                getSetting(settingKey, defaultValue)
+            )
     ),
 ];
 
