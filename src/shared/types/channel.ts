@@ -37,8 +37,8 @@ import { Settings } from './settings';
 // };
 
 export type IpcChannelType = {
-    [SETTING_KEY in keyof Settings as `GET_SETTING_${SETTING_KEY}`]: {
-        request: Settings[SETTING_KEY] | undefined;
+    [SETTING_KEY in keyof Settings as 'GET_SETTING']: {
+        request: { key: SETTING_KEY; defaultValue?: Settings[SETTING_KEY] };
         response: Settings[SETTING_KEY];
     };
 } & {
