@@ -11,6 +11,8 @@ import {
 import { CheckIcon, TrashIcon } from '@primer/octicons-react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
+import { FilteredPatternDatabaseType } from '../../indexed-db/types';
+import { db } from '../../indexed-db';
 import { useLiveQuery } from 'dexie-react-hooks';
 
 interface Props extends BoxProps {}
@@ -30,7 +32,14 @@ export default function FilteredPatternPicker(props: Props) {
         textInputRef.current.focus();
     }, [textInputRef]);
 
-    const filteredPatterns: any[] = [];
+    const filteredPatterns = useLiveQuery(
+        () =>
+            db
+                .table<FilteredPatternDatabaseType>('filteredPatterns')
+                .orderBy('pattern')
+                .toArray(),
+        [date]
+    );
 
     useEffect(() => {
         if (!filteredPatterns || !inputValue) {
@@ -45,10 +54,10 @@ export default function FilteredPatternPicker(props: Props) {
     }, [inputValue, filteredPatterns, setInputValid]);
 
     const onSubmit = useCallback(async () => {
-        // await db.table<FilteredPatternDatabaseType>('filteredPatterns').add({
-        //     pattern: inputValue,
-        //     createdAt: new Date(),
-        // });
+        await db.table<FilteredPatternDatabaseType>('filteredPatterns').add({
+            pattern: inputValue,
+            createdAt: new Date(),
+        });
         setDate(Date.now());
         setInputValue('');
         textInputRef.current.focus();
@@ -56,9 +65,9 @@ export default function FilteredPatternPicker(props: Props) {
 
     const deletePattern = useCallback(
         async (pattern: string) => {
-            // await db
-            //     .table<FilteredPatternDatabaseType>('filteredPatterns')
-            //     .delete(pattern);
+            await db
+                .table<FilteredPatternDatabaseType>('filteredPatterns')
+                .delete(pattern);
             setDate(Date.now());
         },
         [setDate]

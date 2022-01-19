@@ -179,7 +179,7 @@ function ExitApplicationButton() {
                             Are you sure you'd like to exit?
                         </Text>
                         <ButtonDanger
-                        // onClick={window.bridgeApis?.closeApplication}
+                            onClick={window.bridgeApis?.closeApplication}
                         >
                             Yes
                         </ButtonDanger>

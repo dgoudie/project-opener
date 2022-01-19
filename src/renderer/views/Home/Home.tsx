@@ -22,7 +22,7 @@ export default function Home() {
 
     return (
         <>
-            {/* <KeyPressHandler onEscape={window.bridgeApis.hideApplication} /> */}
+            <KeyPressHandler onEscape={window.bridgeApis.hideApplication} />
             <TopBar searchTextChanged={setSearchText} />
             <Box
                 display='grid'
