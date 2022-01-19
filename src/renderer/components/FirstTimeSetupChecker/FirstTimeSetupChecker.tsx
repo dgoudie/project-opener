@@ -1,22 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 
 import { useIpcRequestResponse } from '../../hooks/use-ipc-two-way-request';
 import { useNavigate } from 'react-router-dom';
 
 export default function FirstTimeSetupChecker(): null {
-    const [date, setDate] = useState(Date.now());
-
     const navigate = useNavigate();
 
-    const { result } = useIpcRequestResponse(
-        'PROMPT_FOR_FILE',
-        undefined,
-        date
+    const result = useIpcRequestResponse(
+        'GET_SETTING',
+        'SETUP_COMPLETE',
+        'GET_SETTING_RESULT'
     );
 
-    useEffect(() => {
-        console.log(result);
-    }, [result]);
+    console.log(result);
 
     return null;
 }
