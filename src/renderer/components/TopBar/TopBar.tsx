@@ -141,7 +141,7 @@ function TopBarButtons() {
                 <Tooltip aria-label='Minimize' direction='sw'>
                     <ButtonInvisible
                         style={buttonStyles}
-                        onClick={window.bridgeApis?.hideApplication}
+                        onClick={window.BRIDGE?.hideApplication}
                     >
                         <HorizontalRuleIcon size={18} />
                     </ButtonInvisible>

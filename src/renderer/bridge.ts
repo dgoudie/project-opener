@@ -6,7 +6,7 @@ import {
 } from '../constants/ipc-renderer-constants';
 import { contextBridge, ipcRenderer } from 'electron';
 
-export const bridgeApis = {
+export const BRIDGE = {
     closeApplication: () => ipcRenderer.send(CLOSE_APPLICATION),
     hideApplication: () => ipcRenderer.send(HIDE_APPLICATION),
     registerShowApplicationHotkey: (hotkey: string) =>
@@ -19,4 +19,4 @@ export const bridgeApis = {
         ipcRenderer.removeListener(NAVIGATE_HOME, _),
 };
 
-contextBridge.exposeInMainWorld('bridgeApis', bridgeApis);
+contextBridge.exposeInMainWorld('BRIDGE', BRIDGE);

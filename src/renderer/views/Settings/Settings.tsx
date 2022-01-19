@@ -178,9 +178,7 @@ function ExitApplicationButton() {
                         <Text as='p' sx={{ marginTop: 0 }}>
                             Are you sure you'd like to exit?
                         </Text>
-                        <ButtonDanger
-                            onClick={window.bridgeApis?.closeApplication}
-                        >
+                        <ButtonDanger onClick={window.BRIDGE?.closeApplication}>
                             Yes
                         </ButtonDanger>
                     </Popover.Content>

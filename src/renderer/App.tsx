@@ -34,7 +34,7 @@ const NavigateHomeListener: React.FunctionComponent = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        window.bridgeApis.onNavigateHomeRequested(() => navigate('/'));
+        window.BRIDGE.onNavigateHomeRequested(() => navigate('/'));
     }, []);
     return null;
 };

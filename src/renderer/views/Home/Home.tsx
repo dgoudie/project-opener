@@ -2,7 +2,6 @@ import { Box, FilterList } from '@primer/react';
 import React, { useEffect, useState } from 'react';
 
 import KeyPressHandler from '../../components/KeyPressHandler/KeyPressHandler';
-import SearchResults from '../../components/SearchResults/SearchResults';
 import TopBar from '../../components/TopBar/TopBar';
 import { useParams } from 'react-router-dom';
 import { useProjectSearchResults } from '../../hooks/use-project-search-results';
@@ -22,7 +21,7 @@ export default function Home() {
 
     return (
         <>
-            <KeyPressHandler onEscape={window.bridgeApis.hideApplication} />
+            <KeyPressHandler onEscape={window.BRIDGE.hideApplication} />
             <TopBar searchTextChanged={setSearchText} />
             <Box
                 display='grid'

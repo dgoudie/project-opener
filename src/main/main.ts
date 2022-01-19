@@ -33,8 +33,8 @@ const createWindow = () => {
         resizable: false,
         movable: true,
         fullscreenable: false,
-        show: false,
-        paintWhenInitiallyHidden: false,
+        // show: false,
+        // paintWhenInitiallyHidden: false,
     });
 
     // and load the index.html of the app.
