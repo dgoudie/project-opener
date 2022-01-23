@@ -10,16 +10,14 @@ import {
 } from '@primer/react';
 import { CheckIcon, TrashIcon } from '@primer/octicons-react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { db, filteredPatternsTable } from '../../indexed-db';
 
-import { FilteredPatternDatabaseType } from '../../indexed-db/types';
-import { db } from '../../indexed-db';
+import ListWithActions from '../ListWithActions/ListWithActions';
 import { useLiveQuery } from 'dexie-react-hooks';
 
 interface Props extends BoxProps {}
 
 export default function FilteredPatternPicker(props: Props) {
-    const { theme } = useTheme();
-
     const [date, setDate] = useState(Date.now());
 
     const textInputRef = useRef<HTMLInputElement>(null);
@@ -33,11 +31,7 @@ export default function FilteredPatternPicker(props: Props) {
     }, [textInputRef]);
 
     const filteredPatterns = useLiveQuery(
-        () =>
-            db
-                .table<FilteredPatternDatabaseType>('filteredPatterns')
-                .orderBy('pattern')
-                .toArray(),
+        () => filteredPatternsTable.orderBy('pattern').toArray(),
         [date]
     );
 
@@ -54,7 +48,7 @@ export default function FilteredPatternPicker(props: Props) {
     }, [inputValue, filteredPatterns, setInputValid]);
 
     const onSubmit = useCallback(async () => {
-        await db.table<FilteredPatternDatabaseType>('filteredPatterns').add({
+        await filteredPatternsTable.add({
             pattern: inputValue,
             createdAt: new Date(),
         });
@@ -65,9 +59,7 @@ export default function FilteredPatternPicker(props: Props) {
 
     const deletePattern = useCallback(
         async (pattern: string) => {
-            await db
-                .table<FilteredPatternDatabaseType>('filteredPatterns')
-                .delete(pattern);
+            await filteredPatternsTable.delete(pattern);
             setDate(Date.now());
         },
         [setDate]
@@ -81,32 +73,19 @@ export default function FilteredPatternPicker(props: Props) {
             minHeight={0}
             {...props}
         >
-            <Box
-                sx={{ bg: 'canvas.overlay' }}
-                padding='0 1rem .5rem'
-                overflowY='auto'
-            >
-                {filteredPatterns?.map(({ pattern }) => (
-                    <Box
-                        key={pattern}
-                        borderBottom='1px solid'
-                        borderBottomColor={theme.colors.border.default}
-                        display='flex'
-                        justifyContent='space-between'
-                        alignItems='center'
-                        paddingY='.75rem'
-                    >
-                        <Text>{pattern}</Text>
-                        <Tooltip text='Delete Pattern' direction='w'>
-                            <ButtonDanger
-                                onClick={() => deletePattern(pattern)}
-                            >
-                                <TrashIcon />
-                            </ButtonDanger>
-                        </Tooltip>
-                    </Box>
-                ))}
-            </Box>
+            <ListWithActions
+                items={filteredPatterns?.map(({ pattern }) => ({
+                    text: pattern,
+                    actions: [
+                        {
+                            icon: TrashIcon,
+                            hint: 'Delete Pattern',
+                            onClick: () => deletePattern(pattern),
+                            isDanger: true,
+                        },
+                    ],
+                }))}
+            />
             <Box
                 as='form'
                 onSubmit={onSubmit}
