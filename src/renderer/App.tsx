@@ -1,5 +1,11 @@
 import { Box, useColorSchemeVar } from '@primer/react';
-import { HashRouter, Route, Routes, useNavigate } from 'react-router-dom';
+import {
+  HashRouter,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+} from 'react-router-dom';
 import React, { useEffect } from 'react';
 
 import DirectoryProvider from './providers/DirectoryProvider';
@@ -28,6 +34,7 @@ export default function App() {
               <HashRouter basename='/'>
                 <NavigateHomeListener />
                 <FirstTimeSetupChecker />
+                <RouteReporter />
                 <Routes>
                   <Route path='/settings/*' element={<Settings />} />
                   <Route path='/:filter' element={<Home />} />
@@ -48,5 +55,14 @@ const NavigateHomeListener: React.FunctionComponent = () => {
   useEffect(() => {
     window.BRIDGE.onNavigateHomeRequested(() => navigate('/'));
   }, []);
+  return null;
+};
+
+const RouteReporter: React.FunctionComponent = () => {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.BRIDGE?.reportActiveRoute(pathname);
+  }, [pathname]);
   return null;
 };

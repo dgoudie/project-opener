@@ -17,6 +17,7 @@ type SettingsState = {
 
 type SettingsMutators = {
   setTheme: (THEME: ThemeProviderProps['colorMode']) => Promise<void>;
+  setHotkey: (HOTKEY: string) => Promise<void>;
 };
 
 type SettingsContextType = SettingsState & SettingsMutators;
@@ -29,6 +30,13 @@ export default function SettingsProvider({
   children,
 }: React.PropsWithChildren<{}>) {
   const [settingsState, setSettingsState] = useState<SettingsState>();
+
+  useEffect(() => {
+    if (!settingsState) {
+      return;
+    }
+    window.BRIDGE.registerShowApplicationHotkey(settingsState.HOTKEY);
+  }, [settingsState]);
 
   useEffect(() => {
     const load = async () => {
@@ -49,12 +57,17 @@ export default function SettingsProvider({
     []
   );
 
+  const setHotkey = useCallback(async (HOTKEY: string) => {
+    await settingsTable.update('HOTKEY', { value: HOTKEY });
+    setSettingsState({ ...settingsState, HOTKEY });
+  }, []);
+
   if (!settingsState) {
     return null;
   }
 
   return (
-    <SettingsContext.Provider value={{ ...settingsState, setTheme }}>
+    <SettingsContext.Provider value={{ ...settingsState, setTheme, setHotkey }}>
       {children}
     </SettingsContext.Provider>
   );
