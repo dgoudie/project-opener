@@ -5,14 +5,13 @@ import React from 'react';
 
 interface Item {
   text: string;
-  actions: [
-    {
-      icon: Icon;
-      hint: string;
-      onClick: () => void;
-      isDanger: boolean;
-    }
-  ];
+  actions: {
+    icon: Icon;
+    hint: string;
+    onClick: () => void;
+    isDanger: boolean;
+    disabled?: boolean;
+  }[];
 }
 
 interface Props {
@@ -34,15 +33,20 @@ export default function ListWithActions({ items }: Props) {
           paddingY='.75rem'
         >
           <Text>{text}</Text>
-          {actions.map(({ icon, hint, isDanger, onClick }, index) => (
-            <Button
-              key={index}
-              leadingIcon={icon}
-              variant={isDanger ? 'danger' : 'default'}
-              onClick={onClick}
-              aria-label={hint}
-            ></Button>
-          ))}
+          <Box display={'flex'} gridGap='0.5rem'>
+            {actions.map(
+              ({ icon, hint, isDanger, onClick, disabled = false }, index) => (
+                <Button
+                  key={index}
+                  leadingIcon={icon}
+                  variant={isDanger ? 'danger' : 'default'}
+                  onClick={onClick}
+                  aria-label={hint}
+                  disabled={disabled}
+                ></Button>
+              )
+            )}
+          </Box>
         </Box>
       ))}
     </Box>

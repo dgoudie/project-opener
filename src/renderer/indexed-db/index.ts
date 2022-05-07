@@ -2,7 +2,7 @@ import {
   DirectoryDatabaseType,
   FilteredPatternDatabaseType,
   IdeDatabaeType as IdeDatabaseType,
-} from '../types';
+} from '../../constants/types';
 
 import Dexie from 'dexie';
 

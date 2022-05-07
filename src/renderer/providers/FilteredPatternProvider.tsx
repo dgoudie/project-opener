@@ -1,6 +1,6 @@
 import React, { createContext, useCallback, useEffect, useState } from 'react';
 
-import { FilteredPatternDatabaseType } from '../types';
+import { FilteredPatternDatabaseType } from '../../constants/types';
 import { filteredPatternsTable } from '../indexed-db';
 
 type FilteredPatternContextType = {

@@ -2,6 +2,7 @@ import { Box, BoxProps, Button, TextInput, Tooltip } from '@primer/react';
 import {
   CheckIcon,
   FileDirectoryIcon,
+  SyncIcon,
   TrashIcon,
   XIcon,
 } from '@primer/octicons-react';
@@ -22,7 +23,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 interface Props extends BoxProps {}
 
 export default function DirectoryPicker(props: Props) {
-  const { directories, addDirectory, deleteDirectory } =
+  const { directories, addDirectory, deleteDirectory, scanDirectory } =
     useContext(DirectoryContext);
 
   const { showNotification } = useContext(SnackbarContext);
@@ -41,7 +42,7 @@ export default function DirectoryPicker(props: Props) {
     try {
       await addDirectory(inputValue);
     } catch (e) {
-      showNotification('warning', e.message);
+      showNotification('warning', e.message, 5000);
     }
     setInputValue('');
     textInputRef.current.focus();
@@ -65,9 +66,16 @@ export default function DirectoryPicker(props: Props) {
       {...props}
     >
       <ListWithActions
-        items={directories?.map(({ path }) => ({
+        items={directories?.map(({ path, currentlyScanning }) => ({
           text: path,
           actions: [
+            {
+              icon: SyncIcon,
+              hint: 'Scan Directory',
+              onClick: () => scanDirectory(path),
+              isDanger: false,
+              disabled: currentlyScanning,
+            },
             {
               icon: TrashIcon,
               hint: 'Delete Directory',

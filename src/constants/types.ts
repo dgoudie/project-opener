@@ -1,15 +1,5 @@
 import { ElementOf, literals } from '../utils/oneof-array';
 
-import { ThemeProviderProps } from '@primer/react';
-
-export interface AppNotification {
-  text: string;
-  dismissTimeMs: number | null;
-  id: string;
-  iconName: string;
-  _displayStarted?: boolean;
-}
-
 export const IdeTypes = literals('INTELLIJ', 'VSCODE', 'WEBSTORM', 'CUSTOM');
 
 export type IdeType = ElementOf<typeof IdeTypes>;
@@ -48,7 +38,6 @@ export interface IdeDatabaeType extends Ide {
 export interface ProjectDatabaseType {
   path: string;
   name: string;
-  children: string[];
   createdAt: Date;
   lastOpenedAt: Date;
   openedCount: number;

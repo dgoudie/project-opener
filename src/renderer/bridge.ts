@@ -4,6 +4,7 @@ import {
   NAVIGATE_HOME,
   PROMPT_FOR_DIRECTORY,
   REGISTER_SHOW_APPLICATION_HOTKEY,
+  SCAN_DIRECTORY,
 } from '../constants/ipc-renderer-constants';
 import { contextBridge, ipcRenderer } from 'electron';
 
@@ -21,6 +22,9 @@ export const BRIDGE = {
 
   promptForDirectory: (): Promise<string | undefined> =>
     ipcRenderer.invoke(PROMPT_FOR_DIRECTORY),
+
+  scanDirectory: (path: string, filteredPatterns: string[]) =>
+    ipcRenderer.invoke(SCAN_DIRECTORY, path, filteredPatterns),
 };
 
 contextBridge.exposeInMainWorld('BRIDGE', BRIDGE);

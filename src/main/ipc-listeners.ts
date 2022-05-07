@@ -5,9 +5,11 @@ import {
   NAVIGATE_HOME,
   PROMPT_FOR_DIRECTORY,
   REGISTER_SHOW_APPLICATION_HOTKEY,
+  SCAN_DIRECTORY,
 } from '../constants/ipc-renderer-constants';
 
 import promptForDirectory from './utils/prompt-for-directory';
+import { scanDirectory } from './utils/scan-directory';
 
 let hide: () => void;
 
@@ -29,6 +31,10 @@ export const setupServices = (isDev: boolean, window: BrowserWindow) => {
   });
 
   ipcMain.handle(PROMPT_FOR_DIRECTORY, promptForDirectory);
+
+  ipcMain.handle(SCAN_DIRECTORY, (_event, path, filteredPatterns) =>
+    scanDirectory(path, filteredPatterns, window)
+  );
 
   window.on('blur', hide);
 };
