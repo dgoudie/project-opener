@@ -14,49 +14,49 @@ const gotTheLock = app.requestSingleInstanceLock();
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup') || !gotTheLock) {
-    app.quit();
+  app.quit();
 }
 
-let mainWindow: BrowserWindow;
+export let mainWindow: BrowserWindow;
 
 const createWindow = () => {
-    // Create the browser window.
-    mainWindow = new BrowserWindow({
-        title: 'project-opener',
-        width: 1300,
-        height: 800,
-        icon: path.join(__dirname, 'logo.ico'),
-        webPreferences: {
-            preload: PROJECT_OPENER_PRELOAD_WEBPACK_ENTRY,
-        },
-        frame: false,
-        resizable: false,
-        movable: true,
-        fullscreenable: false,
-        // show: false,
-        // paintWhenInitiallyHidden: false,
-    });
+  // Create the browser window.
+  mainWindow = new BrowserWindow({
+    title: 'project-opener',
+    width: 1300,
+    height: 800,
+    icon: path.join(__dirname, 'logo.ico'),
+    webPreferences: {
+      preload: PROJECT_OPENER_PRELOAD_WEBPACK_ENTRY,
+    },
+    frame: false,
+    resizable: false,
+    movable: true,
+    fullscreenable: false,
+    // show: false,
+    // paintWhenInitiallyHidden: false,
+  });
 
-    // and load the index.html of the app.
-    mainWindow.loadURL(PROJECT_OPENER_WEBPACK_ENTRY);
+  // and load the index.html of the app.
+  mainWindow.loadURL(PROJECT_OPENER_WEBPACK_ENTRY);
 
-    // Open the DevTools.
-    !!isDev && mainWindow.webContents.openDevTools();
+  // Open the DevTools.
+  !!isDev && mainWindow.webContents.openDevTools();
 
-    mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-        shell.openExternal(url);
-        return { action: 'deny' };
-    });
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    shell.openExternal(url);
+    return { action: 'deny' };
+  });
 };
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
-    createWindow();
-    setupServices(isDev, mainWindow);
+  createWindow();
+  setupServices(isDev, mainWindow);
 });
 
 app.on('quit', () => {
-    tearDownServices(mainWindow);
+  tearDownServices(mainWindow);
 });

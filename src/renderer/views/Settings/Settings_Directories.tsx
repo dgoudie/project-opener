@@ -1,5 +1,6 @@
 import { Box, Link } from '@primer/react';
 
+import DirectoryPicker from '../../components/DirectoryPicker/DirectoryPicker';
 import FilteredPatternPicker from '../../components/FilteredPatternPicker/FilteredPatternPicker';
 import React from 'react';
 import SettingsHeader from '../../components/SettingsHeader/SettingsHeader';
@@ -8,23 +9,20 @@ import SettingsHeader from '../../components/SettingsHeader/SettingsHeader';
 
 const LINK = 'https://en.wikipedia.org/wiki/Glob_(programming)';
 
-export default function Settings_FilteredPatterns() {
+export default function Settings_Directories() {
     return (
         <Box display='grid' gridTemplateRows='max-content auto' height='100%'>
             <SettingsHeader
                 subHeading={
                     <>
-                        Choose the glob patterns to ignore when scanning for
-                        projects.{' '}
-                        <Link href={LINK} target='_blank'>
-                            {LINK}
-                        </Link>
+                        Choose the directories to scan for projects. Nested
+                        directories will be searched as well.
                     </>
                 }
             >
-                Filtered Patterns
+                Directories
             </SettingsHeader>
-            <FilteredPatternPicker paddingBottom='1rem' />
+            <DirectoryPicker paddingBottom='1rem' />
         </Box>
     );
 }

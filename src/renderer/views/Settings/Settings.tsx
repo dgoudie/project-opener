@@ -1,189 +1,187 @@
 import {
-    Box,
-    ButtonDanger,
-    ButtonInvisible,
-    Details,
-    Heading,
-    Popover,
-    SideNav,
-    StyledOcticon,
-    Text,
-    useDetails,
+  Box,
+  Button,
+  Details,
+  Popover,
+  SideNav,
+  StyledOcticon,
+  Text,
+  UnderlineNav,
+  useDetails,
 } from '@primer/react';
 import {
-    ChevronLeftIcon,
-    CodeIcon,
-    FileDirectoryFillIcon,
-    FilterIcon,
-    GearIcon,
-    InfoIcon,
-    XIcon,
+  ChevronLeftIcon,
+  CodeIcon,
+  FileDirectoryFillIcon,
+  FilterIcon,
+  GearIcon,
+  InfoIcon,
+  XIcon,
 } from '@primer/octicons-react';
-import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+import {
+  Link,
+  NavLink,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+} from 'react-router-dom';
 
 import KeyPressHandler from '../../components/KeyPressHandler/KeyPressHandler';
 import React from 'react';
+import Settings_Directories from './Settings_Directories';
 import Settings_FilteredPatterns from './Settings_FilteredPatterns';
 import Settings_General from './Settings_General';
 
 const settingsRoutes = [
-    {
-        name: 'General',
-        pathname: '/general',
-        element: <Settings_General />,
-        icon: GearIcon,
-    },
-    {
-        name: 'Filtered Patterns',
-        pathname: '/filtered-patterns',
-        element: <Settings_FilteredPatterns />,
-        icon: FilterIcon,
-    },
-    {
-        name: 'Directories',
-        pathname: '/directories',
-        icon: FileDirectoryFillIcon,
-    },
-    {
-        name: 'IDEs',
-        pathname: '/ides',
-        icon: CodeIcon,
-    },
-    {
-        name: 'About',
-        pathname: '/about',
-        icon: InfoIcon,
-    },
+  {
+    name: 'General',
+    pathname: '/general',
+    element: <Settings_General />,
+    icon: GearIcon,
+  },
+  {
+    name: 'Filtered Patterns',
+    pathname: '/filtered-patterns',
+    element: <Settings_FilteredPatterns />,
+    icon: FilterIcon,
+  },
+  {
+    name: 'Directories',
+    pathname: '/directories',
+    element: <Settings_Directories />,
+    icon: FileDirectoryFillIcon,
+  },
+  {
+    name: 'IDEs',
+    pathname: '/ides',
+    icon: CodeIcon,
+  },
+  {
+    name: 'About',
+    pathname: '/about',
+    icon: InfoIcon,
+  },
 ];
 
 export default function Settings() {
-    const navigate = useNavigate();
-    return (
-        <>
-            <KeyPressHandler onEscape={() => navigate('/')} />
-            <Box
-                display='grid'
-                gridTemplateRows='max-content auto'
-                height='100%'
+  const navigate = useNavigate();
+  return (
+    <>
+      <KeyPressHandler onEscape={() => navigate('/')} />
+      <Box display='grid' gridTemplateRows='max-content auto' height='100%'>
+        <Box
+          bg='canvas.subtle'
+          padding='.5rem'
+          display='grid'
+          gridTemplateColumns='max-content max-content'
+          justifyContent='space-between'
+          style={{
+            //@ts-ignore
+            WebkitAppRegion: 'drag',
+          }}
+        >
+          <Link to={'/'} style={{ textDecoration: 'none' }}>
+            <Button
+              leadingIcon={ChevronLeftIcon}
+              variant='invisible'
+              style={{
+                justifySelf: 'start',
+                cursor: 'pointer',
+                //@ts-ignore
+                WebkitAppRegion: 'no-drag',
+              }}
             >
-                <Box
-                    bg='canvas.subtle'
-                    padding='.5rem'
-                    style={{
-                        //@ts-ignore
-                        WebkitAppRegion: 'drag',
-                    }}
+              Home
+            </Button>
+          </Link>
+          <ExitApplicationButton />
+        </Box>
+        <Box
+          display='grid'
+          gridTemplateColumns='max-content auto'
+          minHeight={0}
+        >
+          <SettingsNav />
+          <Box minHeight={0} paddingX='1rem'>
+            <Routes>
+              {settingsRoutes.map((route) => (
+                <Route
+                  key={route.pathname}
+                  path={route.pathname}
+                  element={route.element}
                 >
-                    <ButtonInvisible
-                        as='a'
-                        href='#/'
-                        style={{
-                            justifySelf: 'start',
-                            cursor: 'pointer',
-                            //@ts-ignore
-                            WebkitAppRegion: 'no-drag',
-                        }}
-                    >
-                        <Box
-                            display='grid'
-                            gridGap='.25rem'
-                            gridAutoFlow='column'
-                            alignItems='center'
-                        >
-                            <ChevronLeftIcon />
-                            <span>Home</span>
-                        </Box>
-                    </ButtonInvisible>
-                </Box>
-                <Box
-                    display='grid'
-                    gridTemplateColumns='15rem auto'
-                    minHeight={0}
-                >
-                    <SettingsNav />
-                    <Box minHeight={0}>
-                        <Routes>
-                            {settingsRoutes.map((route) => (
-                                <Route
-                                    key={route.pathname}
-                                    path={route.pathname}
-                                    element={route.element}
-                                >
-                                    {route.name}
-                                </Route>
-                            ))}
-                        </Routes>
-                    </Box>
-                </Box>
-            </Box>
-        </>
-    );
+                  {route.name}
+                </Route>
+              ))}
+            </Routes>
+          </Box>
+        </Box>
+      </Box>
+    </>
+  );
 }
 
 function SettingsNav() {
-    const { pathname } = useLocation();
-    return (
-        <Box
-            display='grid'
-            gridTemplateRows='max-content max-content'
-            padding='1rem'
-            alignContent='space-between'
-        >
-            <SideNav bordered aria-label='Main'>
-                {settingsRoutes.map((route) => {
-                    return (
-                        <SideNav.Link
-                            key={route.pathname}
-                            href={`#/settings${route.pathname}`}
-                            selected={`/settings${route.pathname}` === pathname}
-                        >
-                            <StyledOcticon
-                                sx={{ mr: 2 }}
-                                size={16}
-                                icon={route.icon}
-                            />
-                            <Text>{route.name}</Text>
-                        </SideNav.Link>
-                    );
-                })}
-            </SideNav>
-            <ExitApplicationButton />
-        </Box>
-    );
+  const { pathname } = useLocation();
+  return (
+    <Box padding='1rem 0 1rem 1rem'>
+      <SideNav aria-label='Settings Navigation' bordered>
+        {settingsRoutes.map((route) => {
+          return (
+            <SideNav.Link
+              as={NavLink}
+              to={`/settings${route.pathname}`}
+              key={route.pathname}
+              selected={`/settings${route.pathname}` === pathname}
+            >
+              <StyledOcticon sx={{ mr: 2 }} size={16} icon={route.icon} />
+              <Text>{route.name}</Text>
+            </SideNav.Link>
+          );
+        })}
+      </SideNav>
+    </Box>
+  );
 }
 
 function ExitApplicationButton() {
-    const { getDetailsProps, setOpen } = useDetails({
-        closeOnOutsideClick: true,
-    });
-    return (
-        <Box position='relative'>
-            <SideNav bordered aria-label='Main'>
-                <SideNav.Link
-                    style={{ cursor: 'pointer' }}
-                    onClick={() => setOpen(true)}
-                >
-                    <StyledOcticon sx={{ mr: 2 }} size={16} icon={XIcon} />
-                    <Text>Exit Application</Text>
-                </SideNav.Link>
-            </SideNav>
-            <Details {...getDetailsProps()}>
-                <summary></summary>
-                <Popover
-                    open={true}
-                    caret='left-bottom'
-                    sx={{ bottom: 0, left: `calc(100% + 1rem)` }}
-                >
-                    <Popover.Content sx={{ mt: 2 }}>
-                        <Text as='p' sx={{ marginTop: 0 }}>
-                            Are you sure you'd like to exit?
-                        </Text>
-                        <ButtonDanger onClick={window.BRIDGE?.closeApplication}>
-                            Yes
-                        </ButtonDanger>
-                    </Popover.Content>
-                </Popover>
-            </Details>
-        </Box>
-    );
+  const { getDetailsProps, setOpen, open } = useDetails({
+    closeOnOutsideClick: true,
+  });
+  return (
+    <Box
+      position='relative'
+      style={{
+        //@ts-ignore
+        WebkitAppRegion: 'no-drag',
+      }}
+    >
+      <Details {...getDetailsProps()}>
+        <summary>
+          <Button
+            variant='invisible'
+            sx={{ paddingX: '10px' }}
+            onClick={() => setOpen(!open)}
+          >
+            <StyledOcticon size={16} icon={XIcon} />
+          </Button>
+        </summary>
+        <Popover
+          open={true}
+          caret='right-top'
+          sx={{ top: 0, right: `calc(100% + 1rem)` }}
+        >
+          <Popover.Content>
+            <Text as='p' sx={{ marginTop: 0 }}>
+              Are you sure you'd like to exit?
+            </Text>
+            <Button variant='danger' onClick={window.BRIDGE?.closeApplication}>
+              Yes
+            </Button>
+          </Popover.Content>
+        </Popover>
+      </Details>
+    </Box>
+  );
 }

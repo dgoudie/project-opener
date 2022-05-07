@@ -18,7 +18,6 @@ export default function SettingsHeader({ children, subHeading }: Props) {
                 borderBottomStyle: 'solid',
                 padding: '.5rem 0 .25rem',
                 marginBottom: '.5rem',
-                marginRight: '1rem',
                 borderBottomColor: theme.colors.border.default,
                 display: 'grid',
                 gridAutoFlow: 'row',
