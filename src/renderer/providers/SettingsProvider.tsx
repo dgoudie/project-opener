@@ -36,7 +36,7 @@ export default function SettingsProvider({
       return;
     }
     window.BRIDGE.registerShowApplicationHotkey(settingsState.HOTKEY);
-  }, [settingsState]);
+  }, [settingsState?.HOTKEY]);
 
   useEffect(() => {
     const load = async () => {
@@ -54,13 +54,16 @@ export default function SettingsProvider({
       await settingsTable.update('THEME', { value: THEME });
       setSettingsState({ ...settingsState, THEME });
     },
-    []
+    [settingsState]
   );
 
-  const setHotkey = useCallback(async (HOTKEY: string) => {
-    await settingsTable.update('HOTKEY', { value: HOTKEY });
-    setSettingsState({ ...settingsState, HOTKEY });
-  }, []);
+  const setHotkey = useCallback(
+    async (HOTKEY: string) => {
+      await settingsTable.update('HOTKEY', { value: HOTKEY });
+      setSettingsState({ ...settingsState, HOTKEY });
+    },
+    [settingsState]
+  );
 
   if (!settingsState) {
     return null;

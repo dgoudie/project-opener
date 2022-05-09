@@ -1,15 +1,26 @@
 import { Box, BoxProps, Button, TextInput } from '@primer/react';
 import { CheckIcon, TrashIcon, XIcon } from '@primer/octicons-react';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 
+import { FilteredPatternContext } from '../../providers/FilteredPatternProvider';
 import ListWithActions from '../ListWithActions/ListWithActions';
+import { SnackbarContext } from '../../providers/SnackbarProvider';
 import { filteredPatternsTable } from '../../indexed-db';
 import { useLiveQuery } from 'dexie-react-hooks';
 
 interface Props extends BoxProps {}
 
 export default function FilteredPatternPicker(props: Props) {
-  const [date, setDate] = useState(Date.now());
+  const { filteredPatterns, deleteFilteredPattern, addFilteredPattern } =
+    useContext(FilteredPatternContext);
+
+  const { showNotification } = useContext(SnackbarContext);
 
   const textInputRef = useRef<HTMLInputElement>(null);
 
@@ -19,34 +30,21 @@ export default function FilteredPatternPicker(props: Props) {
     textInputRef.current.focus();
   }, [textInputRef]);
 
-  const filteredPatterns = useLiveQuery(
-    () => filteredPatternsTable.orderBy('pattern').toArray(),
-    [date]
-  );
-
-  const onSubmit = useCallback(async () => {
-    if (
-      !!filteredPatterns.find(({ pattern }) => inputValue.trim() === pattern)
-    ) {
-      alert('This pattern already exists.');
-      return;
-    }
-
-    await filteredPatternsTable.add({
-      pattern: inputValue,
-      createdAt: new Date(),
-    });
-    setDate(Date.now());
-    setInputValue('');
-    textInputRef.current.focus();
-  }, [textInputRef, setDate, inputValue, setInputValue]);
-
-  const deletePattern = useCallback(
-    async (pattern: string) => {
-      await filteredPatternsTable.delete(pattern);
-      setDate(Date.now());
+  const onSubmit = useCallback<
+    React.FormEventHandler<HTMLDivElement> &
+      React.FormEventHandler<HTMLFormElement>
+  >(
+    async (event) => {
+      event.preventDefault();
+      try {
+        await addFilteredPattern(inputValue);
+      } catch (e) {
+        showNotification('warning', e.message, 5000);
+      }
+      setInputValue('');
+      textInputRef.current.focus();
     },
-    [setDate]
+    [textInputRef, inputValue, setInputValue]
   );
 
   return (
@@ -64,7 +62,7 @@ export default function FilteredPatternPicker(props: Props) {
             {
               icon: TrashIcon,
               hint: 'Delete Pattern',
-              onClick: () => deletePattern(pattern),
+              onClick: () => deleteFilteredPattern(pattern),
               isDanger: true,
             },
           ],

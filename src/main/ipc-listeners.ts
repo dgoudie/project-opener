@@ -29,10 +29,13 @@ export const setupServices = (isDev: boolean, window: BrowserWindow) => {
 
   ipcMain.on(HIDE_APPLICATION, hide);
 
-  ipcMain.on(REGISTER_SHOW_APPLICATION_HOTKEY, (_event, hotkey: string) => {
-    globalShortcut.unregisterAll();
-    globalShortcut.register(hotkey, () => window.show());
-  });
+  ipcMain.on(
+    REGISTER_SHOW_APPLICATION_HOTKEY,
+    (_event, hotkey: string | undefined) => {
+      globalShortcut.unregisterAll();
+      !!hotkey && globalShortcut.register(hotkey, () => window.show());
+    }
+  );
 
   ipcMain.on(REPORT_ACTIVE_ROUTE, (_event, route: string) => {
     activeRoute = route;

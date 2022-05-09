@@ -12,7 +12,7 @@ import { contextBridge, ipcRenderer } from 'electron';
 export const BRIDGE = {
   closeApplication: () => ipcRenderer.send(CLOSE_APPLICATION),
   hideApplication: () => ipcRenderer.send(HIDE_APPLICATION),
-  registerShowApplicationHotkey: (hotkey: string) =>
+  registerShowApplicationHotkey: (hotkey?: string) =>
     ipcRenderer.send(REGISTER_SHOW_APPLICATION_HOTKEY, hotkey),
 
   onNavigateHomeRequested: (callback: () => void) =>

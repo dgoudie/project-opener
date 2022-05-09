@@ -38,15 +38,22 @@ export default function DirectoryPicker(props: Props) {
     textInputRef.current.focus();
   }, [textInputRef]);
 
-  const onSubmit = useCallback(async () => {
-    try {
-      await addDirectory(inputValue);
-    } catch (e) {
-      showNotification('warning', e.message, 5000);
-    }
-    setInputValue('');
-    textInputRef.current.focus();
-  }, [textInputRef, inputValue, setInputValue]);
+  const onSubmit = useCallback<
+    React.FormEventHandler<HTMLDivElement> &
+      React.FormEventHandler<HTMLFormElement>
+  >(
+    async (event) => {
+      event.preventDefault();
+      try {
+        await addDirectory(inputValue);
+      } catch (e) {
+        showNotification('warning', e.message, 5000);
+      }
+      setInputValue('');
+      textInputRef.current.focus();
+    },
+    [textInputRef, inputValue, setInputValue]
+  );
 
   const promptForDirectory = useCallback(async () => {
     setIsPromptingForDirectory(true);

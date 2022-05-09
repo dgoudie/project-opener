@@ -100,6 +100,7 @@
     "electron-squirrel-startup": "^1.0.0",
     "fs-extra": "^10.1.0",
     "globby": "^13.1.1",
+    "hotkeys-js": "^3.9.3",
     "immer": "^9.0.12",
     "react": "^17.0.2",
     "react-async-hook": "^4.0.0",

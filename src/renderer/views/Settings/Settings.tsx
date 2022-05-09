@@ -7,6 +7,7 @@ import {
   StyledOcticon,
   Text,
   UnderlineNav,
+  useConfirm,
   useDetails,
 } from '@primer/react';
 import {
@@ -26,9 +27,9 @@ import {
   useLocation,
   useNavigate,
 } from 'react-router-dom';
+import React, { useCallback } from 'react';
 
 import KeyPressHandler from '../../components/KeyPressHandler/KeyPressHandler';
-import React from 'react';
 import Settings_Directories from './Settings_Directories';
 import Settings_FilteredPatterns from './Settings_FilteredPatterns';
 import Settings_General from './Settings_General';
@@ -95,7 +96,6 @@ export default function Settings() {
               Home
             </Button>
           </Link>
-          <ExitApplicationButton />
         </Box>
         <Box
           display='grid'
@@ -124,8 +124,26 @@ export default function Settings() {
 
 function SettingsNav() {
   const { pathname } = useLocation();
+  const confirm = useConfirm();
+  const confirmExit = useCallback(async () => {
+    if (
+      await confirm({
+        title: `Quit project-opener?`,
+        content: '',
+        confirmButtonType: 'danger',
+        confirmButtonContent: 'Quit',
+      })
+    ) {
+      window.BRIDGE?.closeApplication();
+    }
+  }, [confirm]);
   return (
-    <Box padding='1rem 0 1rem 1rem'>
+    <Box
+      padding='1rem 0 1rem 1rem'
+      display={'flex'}
+      flexDirection='column'
+      justifyContent={'space-between'}
+    >
       <SideNav aria-label='Settings Navigation' bordered>
         {settingsRoutes.map((route) => {
           return (
@@ -141,47 +159,16 @@ function SettingsNav() {
           );
         })}
       </SideNav>
-    </Box>
-  );
-}
-
-function ExitApplicationButton() {
-  const { getDetailsProps, setOpen, open } = useDetails({
-    closeOnOutsideClick: true,
-  });
-  return (
-    <Box
-      position='relative'
-      style={{
-        //@ts-ignore
-        WebkitAppRegion: 'no-drag',
-      }}
-    >
-      <Details {...getDetailsProps()}>
-        <summary>
-          <Button
-            variant='invisible'
-            sx={{ paddingX: '10px' }}
-            onClick={() => setOpen(!open)}
-          >
-            <StyledOcticon size={16} icon={XIcon} />
-          </Button>
-        </summary>
-        <Popover
-          open={true}
-          caret='right-top'
-          sx={{ top: 0, right: `calc(100% + 1rem)` }}
+      <SideNav aria-label='Settings Navigation' bordered>
+        <SideNav.Link
+          as={'button'}
+          onClick={confirmExit}
+          style={{ fontFamily: 'inherit' }}
         >
-          <Popover.Content>
-            <Text as='p' sx={{ marginTop: 0 }}>
-              Are you sure you'd like to exit?
-            </Text>
-            <Button variant='danger' onClick={window.BRIDGE?.closeApplication}>
-              Yes
-            </Button>
-          </Popover.Content>
-        </Popover>
-      </Details>
+          <StyledOcticon sx={{ mr: 2 }} size={16} icon={XIcon} />
+          <Text fontSize={14}>Quit</Text>
+        </SideNav.Link>
+      </SideNav>
     </Box>
   );
 }

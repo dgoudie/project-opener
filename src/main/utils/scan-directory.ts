@@ -3,10 +3,10 @@ import {
   ProjectDatabaseType,
   ProjectTypeFileNameMap,
 } from '../../constants/types';
+import { normalize, sep } from 'path';
 
 import { REPORT_EXCEPTION } from '../../constants/ipc-renderer-constants';
 import { globby } from 'globby';
-import { normalize } from 'path';
 import { parseStringPromise } from 'xml2js';
 import { readFile } from 'fs-extra';
 import toml from 'toml';
@@ -32,7 +32,13 @@ export const scanDirectory = async (
 
   paths = paths.map((path) => normalize(path));
 
+  paths = removeNestedPaths(paths);
+
   return convertFilesToProjects(paths, window);
+};
+
+const removeNestedPaths = (paths: string[]): string[] => {
+  return paths;
 };
 
 const convertFilesToProjects = (paths: string[], window: BrowserWindow) => {
