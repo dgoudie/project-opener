@@ -19,7 +19,9 @@ import { Link, useParams } from 'react-router-dom';
 import React, { useContext, useEffect, useRef } from 'react';
 
 import { DirectoryContext } from '../../providers/DirectoryProvider';
+import { projectsTable } from '../../indexed-db';
 import { useDebounce } from '@react-hook/debounce';
+import { useLiveQuery } from 'dexie-react-hooks';
 
 interface Props {
   searchTextChanged: (value: string) => void;
@@ -30,7 +32,13 @@ export default function TopBar({ searchTextChanged }: Props) {
 
   const textInputRef = useRef<HTMLInputElement>(null);
 
-  const [searchText, setSearchText] = useDebounce('', 300);
+  const [searchText, setSearchText] = useDebounce('', 150);
+
+  const projectCount = useLiveQuery(
+    () => projectsTable.count().then((count) => count.toString()),
+    [],
+    '...'
+  );
 
   useEffect(() => {
     searchTextChanged(searchText);
@@ -61,7 +69,7 @@ export default function TopBar({ searchTextChanged }: Props) {
         <TextInput
           type={'search'}
           block
-          leadingVisual='Search 100 projects for:'
+          leadingVisual={`Search ${projectCount} projects for:`}
           onChange={(event) =>
             setSearchText((event.target as HTMLInputElement).value)
           }

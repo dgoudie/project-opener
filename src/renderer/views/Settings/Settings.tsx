@@ -17,6 +17,7 @@ import {
   FilterIcon,
   GearIcon,
   InfoIcon,
+  XCircleIcon,
   XIcon,
 } from '@primer/octicons-react';
 import {
@@ -165,7 +166,7 @@ function SettingsNav() {
           onClick={confirmExit}
           style={{ fontFamily: 'inherit' }}
         >
-          <StyledOcticon sx={{ mr: 2 }} size={16} icon={XIcon} />
+          <StyledOcticon sx={{ mr: 2 }} size={16} icon={XCircleIcon} />
           <Text fontSize={14}>Quit</Text>
         </SideNav.Link>
       </SideNav>

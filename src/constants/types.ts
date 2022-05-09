@@ -31,13 +31,14 @@ export interface Ide {
   path: string;
 }
 
-export interface IdeDatabaeType extends Ide {
+export interface IdeDatabaseType extends Ide {
   projectType: ProjectType;
 }
 
 export interface ProjectDatabaseType {
   path: string;
   name: string;
+  type: ProjectType;
   createdAt: Date;
   lastOpenedAt: Date;
   openedCount: number;

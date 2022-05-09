@@ -69,11 +69,11 @@ const convertFilesToProjects = (paths: string[], window: BrowserWindow) => {
     paths.map(async (path) => {
       try {
         const file = await readFile(path, 'utf-8');
-        const projectType = Array.from(ProjectTypeFileNameMap.entries()).find(
+        const type = Array.from(ProjectTypeFileNameMap.entries()).find(
           ([_projectType, fileName]) => path.toLowerCase().includes(fileName)
         )[0];
         let name: Promise<string>;
-        switch (projectType) {
+        switch (type) {
           case 'MAVEN':
             name = getNameFromPomFile(file);
             break;
@@ -89,12 +89,13 @@ const convertFilesToProjects = (paths: string[], window: BrowserWindow) => {
         }
         if (!name) {
           throw new Error(
-            `Unable to determine project file for project type ${projectType}`
+            `Unable to determine project file for project type ${type}`
           );
         }
         let project: ProjectDatabaseType = {
           path,
           name: await name,
+          type,
           createdAt: new Date(),
           lastOpenedAt: undefined,
           openedCount: 0,

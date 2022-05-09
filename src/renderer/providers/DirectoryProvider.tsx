@@ -52,36 +52,6 @@ export default function DirectoryProvider({
     syncStateWithDatabase();
   }, []);
 
-  const addDirectory = useCallback(
-    (path: string) => {
-      const addAsync = async () => {
-        validateDirectory(path, directories);
-        const newDirectory: DirectoryDatabaseType = {
-          path,
-          createdAt: new Date(),
-        };
-        await directoriesTable
-          .add(newDirectory)
-          .catch('ConstraintError', (constraintError: Error) => {
-            console.error(constraintError);
-            constraintError.message = 'This directory has already been added.';
-            throw constraintError;
-          });
-        await syncStateWithDatabase();
-      };
-      return addAsync();
-    },
-    [directories]
-  );
-
-  const deleteDirectory = useCallback((path: string) => {
-    const deleteAsync = async () => {
-      await directoriesTable.delete(path);
-      await syncStateWithDatabase();
-    };
-    return deleteAsync();
-  }, []);
-
   const scanDirectory = useCallback((path: string) => {
     const scanAsync = async () => {
       setDirectories(
@@ -106,6 +76,38 @@ export default function DirectoryProvider({
       );
     };
     return scanAsync();
+  }, []);
+
+  const addDirectory = useCallback(
+    (path: string) => {
+      const addAsync = async () => {
+        validateDirectory(path, directories);
+        const newDirectory: DirectoryDatabaseType = {
+          path,
+          createdAt: new Date(),
+        };
+        await directoriesTable
+          .add(newDirectory)
+          .catch('ConstraintError', (constraintError: Error) => {
+            console.error(constraintError);
+            constraintError.message = 'This directory has already been added.';
+            throw constraintError;
+          });
+        await syncStateWithDatabase();
+        scanDirectory(path);
+      };
+      return addAsync();
+    },
+    [directories, scanDirectory]
+  );
+
+  const deleteDirectory = useCallback((path: string) => {
+    const deleteAsync = async () => {
+      await projectsTable.where('path').startsWith(path).delete();
+      await directoriesTable.delete(path);
+      await syncStateWithDatabase();
+    };
+    return deleteAsync();
   }, []);
 
   if (typeof directories === 'undefined') {

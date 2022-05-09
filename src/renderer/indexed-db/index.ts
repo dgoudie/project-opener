@@ -1,7 +1,7 @@
 import {
   DirectoryDatabaseType,
   FilteredPatternDatabaseType,
-  IdeDatabaeType as IdeDatabaseType,
+  IdeDatabaseType,
   ProjectDatabaseType,
 } from '../../constants/types';
 
@@ -9,7 +9,7 @@ import Dexie from 'dexie';
 
 export const db = new Dexie('ProjectOpener');
 db.version(1).stores({
-  projects: '[&path+name]',
+  projects: '[&path+name],type,openedCount',
   settings: 'key',
   ides: 'projectType',
   filteredPatterns: 'pattern',
