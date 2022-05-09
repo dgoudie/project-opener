@@ -128,7 +128,5 @@ const updateDBWithResultsFromScan = async (
     .where('path')
     .noneOf(projectsFound.map((project) => project.path))
     .delete();
-  await projectsTable
-    .bulkAdd(projectsFound)
-    .catch((error) => console.error(error));
+  await projectsTable.bulkAdd(projectsFound).catch(() => undefined);
 };
