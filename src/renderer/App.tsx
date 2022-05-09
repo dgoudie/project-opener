@@ -6,7 +6,10 @@ import {
   useLocation,
   useNavigate,
 } from 'react-router-dom';
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
+import SnackbarProvider, {
+  SnackbarContext,
+} from './providers/SnackbarProvider';
 
 import DirectoryProvider from './providers/DirectoryProvider';
 import FilteredPatternProvider from './providers/FilteredPatternProvider';
@@ -14,7 +17,6 @@ import FirstTimeSetupChecker from './components/FirstTimeSetupChecker/FirstTimeS
 import Home from './views/Home/Home';
 import Settings from './views/Settings/Settings';
 import SettingsProvider from './providers/SettingsProvider';
-import SnackbarProvider from './providers/SnackbarProvider';
 import primatives from '@primer/primitives';
 
 export default function App() {
@@ -33,6 +35,7 @@ export default function App() {
             <SnackbarProvider>
               <HashRouter basename='/'>
                 <NavigateHomeListener />
+                <ExceptionListener />
                 <FirstTimeSetupChecker />
                 <RouteReporter />
                 <Routes>
@@ -54,6 +57,17 @@ const NavigateHomeListener: React.FunctionComponent = () => {
 
   useEffect(() => {
     window.BRIDGE.onNavigateHomeRequested(() => navigate('/'));
+  }, []);
+  return null;
+};
+
+const ExceptionListener: React.FunctionComponent = () => {
+  const { showNotification } = useContext(SnackbarContext);
+
+  useEffect(() => {
+    window.BRIDGE.onExceptionReceived((event, type, message) =>
+      showNotification(type, message, 5000)
+    );
   }, []);
   return null;
 };

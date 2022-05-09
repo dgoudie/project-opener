@@ -3,7 +3,7 @@ import {
   ProjectDatabaseType,
   ProjectTypeFileNameMap,
 } from '../../constants/types';
-import { normalize, sep } from 'path';
+import { dirname, normalize, sep } from 'path';
 
 import { REPORT_EXCEPTION } from '../../constants/ipc-renderer-constants';
 import { globby } from 'globby';
@@ -38,7 +38,30 @@ export const scanDirectory = async (
 };
 
 const removeNestedPaths = (paths: string[]): string[] => {
+  const pathWithoutFileNamesSet = new Set(paths.map((path) => dirname(path)));
+  paths = paths.filter((path) => {
+    let parentDirectoryPaths = getParentDirectoryPaths(path);
+    const anyParentDirectoryExistsInMap = !!parentDirectoryPaths.find(
+      (parentPath) => pathWithoutFileNamesSet.has(parentPath)
+    );
+    return !anyParentDirectoryExistsInMap;
+  });
   return paths;
+};
+
+const getParentDirectoryPaths = (path: string) => {
+  const parentDirectoryPaths = [];
+  let dirSplit = dirname(path).split(sep);
+  dirSplit.pop();
+
+  while (dirSplit.length > 0) {
+    const rejoined = dirSplit.join(sep);
+    if (!!rejoined) {
+      parentDirectoryPaths.push(rejoined);
+    }
+    dirSplit.pop();
+  }
+  return parentDirectoryPaths;
 };
 
 const convertFilesToProjects = (paths: string[], window: BrowserWindow) => {

@@ -16,7 +16,7 @@ import React, {
 
 import useQueue from 'react-use/lib/useQueue';
 
-type NotificationType = 'success' | 'warning' | 'danger' | 'default';
+export type NotificationType = 'success' | 'warning' | 'danger' | 'default';
 
 type SnackbarContextType = {
   showPersistent: (content: JSX.Element | string) => void;

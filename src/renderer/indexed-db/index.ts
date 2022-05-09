@@ -2,6 +2,7 @@ import {
   DirectoryDatabaseType,
   FilteredPatternDatabaseType,
   IdeDatabaeType as IdeDatabaseType,
+  ProjectDatabaseType,
 } from '../../constants/types';
 
 import Dexie from 'dexie';
@@ -15,6 +16,7 @@ db.version(1).stores({
   directories: '&path',
 });
 
+export const projectsTable = db.table<ProjectDatabaseType>('projects');
 export const settingsTable = db.table<{ key: string; value: any }>('settings');
 export const idesTable = db.table<IdeDatabaseType>('ides');
 export const filteredPatternsTable =

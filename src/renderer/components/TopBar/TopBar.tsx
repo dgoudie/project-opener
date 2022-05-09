@@ -141,7 +141,7 @@ function TopBarButtons() {
           </Box>
         </Tooltip>
         <Tooltip aria-label='Settings' direction='s'>
-          <Link to={'/settings/general'}>
+          <Link to={'/settings/general'} tabIndex={-1}>
             <Button variant='invisible' style={buttonStyles}>
               <GearIcon size={18} />
             </Button>

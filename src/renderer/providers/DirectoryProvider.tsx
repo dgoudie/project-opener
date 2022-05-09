@@ -1,7 +1,14 @@
+import {
+  DirectoryDatabaseType,
+  ProjectDatabaseType,
+} from '../../constants/types';
 import { createContext, useCallback, useEffect, useState } from 'react';
-import { directoriesTable, filteredPatternsTable } from '../indexed-db';
+import {
+  directoriesTable,
+  filteredPatternsTable,
+  projectsTable,
+} from '../indexed-db';
 
-import { DirectoryDatabaseType } from '../../constants/types';
 import React from 'react';
 import produce from 'immer';
 import { validateDirectory } from '../../utils/validate-directory';
@@ -86,8 +93,11 @@ export default function DirectoryProvider({
       const filteredPatterns = (await filteredPatternsTable.toArray()).map(
         ({ pattern }) => pattern
       );
-      const result = await window.BRIDGE?.scanDirectory(path, filteredPatterns);
-      console.log('result', result);
+      const foundProjects = await window.BRIDGE?.scanDirectory(
+        path,
+        filteredPatterns
+      );
+      await updateDBWithResultsFromScan(foundProjects);
       setDirectories(
         produce((draft) => {
           draft.find((directory) => directory.path === path).currentlyScanning =
@@ -110,3 +120,15 @@ export default function DirectoryProvider({
     </DirectoryContext.Provider>
   );
 }
+
+const updateDBWithResultsFromScan = async (
+  projectsFound: ProjectDatabaseType[]
+) => {
+  await projectsTable
+    .where('path')
+    .noneOf(projectsFound.map((project) => project.path))
+    .delete();
+  await projectsTable
+    .bulkAdd(projectsFound)
+    .catch((error) => console.error(error));
+};
