@@ -21,7 +21,7 @@ interface Props {
 export default function ListWithActions({ items }: Props) {
   const { theme } = useTheme();
   return (
-    <Box sx={{ bg: 'canvas.overlay' }} padding='0 1rem .5rem' overflowY='auto'>
+    <Box bg='canvas.overlay' padding='0 1rem .5rem' overflowY='auto'>
       {items?.map(({ text, actions }) => (
         <Box
           key={text}

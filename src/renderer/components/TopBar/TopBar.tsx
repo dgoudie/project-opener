@@ -12,6 +12,7 @@ import {
   FileDirectoryIcon,
   GearIcon,
   HorizontalRuleIcon,
+  HourglassIcon,
   SyncIcon,
   XIcon,
 } from '@primer/octicons-react';
@@ -59,6 +60,7 @@ export default function TopBar({ searchTextChanged }: Props) {
       gridTemplateColumns='1fr max-content max-content'
       alignItems='center'
       gridGap='1rem'
+      flexShrink={0}
     >
       <Box
         style={{
@@ -94,7 +96,7 @@ export default function TopBar({ searchTextChanged }: Props) {
 }
 
 function TopBarButtons() {
-  const { directories } = useContext(DirectoryContext);
+  const { directories, scanDirectory } = useContext(DirectoryContext);
 
   const buttonStyles: React.CSSProperties = {
     padding: 6,
@@ -127,10 +129,15 @@ function TopBarButtons() {
                     {directories.map((directory) => (
                       <ActionList.Item
                         key={directory.path}
-                        onSelect={(event) => console.log('New file')}
+                        disabled={directory.currentlyScanning}
+                        onSelect={(event) => scanDirectory(directory.path)}
                       >
                         <ActionList.LeadingVisual>
-                          <FileDirectoryIcon />
+                          {directory.currentlyScanning ? (
+                            <HourglassIcon />
+                          ) : (
+                            <FileDirectoryIcon />
+                          )}
                         </ActionList.LeadingVisual>
                         {directory.path}
                       </ActionList.Item>

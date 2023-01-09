@@ -86,6 +86,9 @@ const convertFilesToProjects = (paths: string[], window: BrowserWindow) => {
           case 'PYTHON':
             name = getNameFromPipfile(file);
             break;
+          case 'GO':
+            name = getNameFromGoModFile(file);
+            break;
         }
         if (!name) {
           throw new Error(
@@ -139,4 +142,11 @@ const getNameFromPipfile = async (data: string): Promise<string> => {
     throw new Error('Malformed Pipfile');
   }
   return tomlFile.source[0].name;
+};
+
+const getNameFromGoModFile = async (data: string): Promise<string> => {
+  const fileLines = data.split('\n');
+  return fileLines
+    .find((line) => line.startsWith('module '))
+    .replace('module ', '');
 };

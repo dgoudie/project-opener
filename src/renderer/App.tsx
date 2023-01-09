@@ -1,4 +1,4 @@
-import { Box, useColorSchemeVar } from '@primer/react';
+import { Box, useColorSchemeVar, useTheme } from '@primer/react';
 import {
   HashRouter,
   Route,
@@ -20,6 +20,7 @@ import SettingsProvider from './providers/SettingsProvider';
 import primatives from '@primer/primitives';
 
 export default function App() {
+  const { theme } = useTheme();
   const boxBackground = useColorSchemeVar(
     {
       light: primatives.colors.light.scale.gray[1],
@@ -28,7 +29,12 @@ export default function App() {
     primatives.colors.light.scale.gray[1]
   );
   return (
-    <Box bg={boxBackground} height='100vh'>
+    <Box
+      bg={boxBackground}
+      height='100vh'
+      display={'flex'}
+      flexDirection='column'
+    >
       <SettingsProvider>
         <DirectoryProvider>
           <FilteredPatternProvider>

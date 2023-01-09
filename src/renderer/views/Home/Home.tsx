@@ -1,16 +1,16 @@
-import { Box, FilterList } from '@primer/react';
-import { Collection, IndexableType } from 'dexie';
+import { Box, FilterList, Text, useTheme } from '@primer/react';
 import {
   ProjectDatabaseType,
   ProjectType,
   ProjectTypeNameMap,
   ProjectTypes,
 } from '../../../constants/types';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import KeyPressHandler from '../../components/KeyPressHandler/KeyPressHandler';
 import TopBar from '../../components/TopBar/TopBar';
 import { projectsTable } from '../../indexed-db';
+import styles from './Home.module.css';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useParams } from 'react-router-dom';
 
@@ -80,7 +80,13 @@ export default function Home() {
     <>
       <KeyPressHandler onEscape={window.BRIDGE.hideApplication} />
       <TopBar searchTextChanged={setSearchText} />
-      <Box display='grid' gridTemplateColumns='15rem auto' paddingLeft='1rem'>
+      <Box
+        display='grid'
+        gridTemplateColumns='15rem auto'
+        paddingLeft='1rem'
+        minHeight={0}
+        flex={1}
+      >
         <HomeFilterList projectCountsByType={projectCountsByType} />
         <HomeProjects projects={projectsMatchingType} />
       </Box>
@@ -138,10 +144,53 @@ type HomeProjectsProps = {
 
 function HomeProjects({ projects }: HomeProjectsProps) {
   return (
-    <div>
+    <Box
+      display={'flex'}
+      flexDirection='column'
+      overflowY={'auto'}
+      px={2}
+      pb={2}
+      gridGap={2}
+    >
       {projects.map((project) => (
-        <p key={project.path}>{JSON.stringify(project)}</p>
+        <Project key={project.path} project={project} />
       ))}
-    </div>
+    </Box>
+  );
+}
+
+type ProjectProps = {
+  project: ProjectDatabaseType;
+};
+
+function Project({ project }: ProjectProps) {
+  const { theme } = useTheme();
+  return (
+    <Box
+      display={'flex'}
+      // bg='canvas.overlay'
+      px={3}
+      py={1}
+      alignItems='center'
+      gridGap={3}
+      className={styles.Project}
+    >
+      <Box height={24} width={36}>
+        <img
+          src={`/assets/${project.type}.png`}
+          height={'100%'}
+          width={'100%'}
+          style={{ objectFit: 'contain' }}
+        ></img>
+      </Box>
+      <Box flex={1} display={'grid'} gridTemplateRows='1fr 1fr'>
+        <Text fontWeight={600} fontSize={3} className={styles.ProjectText}>
+          {project.name}
+        </Text>
+        <Text fontSize={1} className={styles.ProjectText}>
+          {project.path}
+        </Text>
+      </Box>
+    </Box>
   );
 }

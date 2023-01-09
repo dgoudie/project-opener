@@ -1,0 +1,9 @@
+.Project {
+  user-select: none;
+}
+.ProjectText {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  min-width: 0;
+  overflow-x: hidden;
+}

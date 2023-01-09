@@ -1,16 +1,4 @@
 import {
-  Box,
-  Button,
-  Details,
-  Popover,
-  SideNav,
-  StyledOcticon,
-  Text,
-  UnderlineNav,
-  useConfirm,
-  useDetails,
-} from '@primer/react';
-import {
   ChevronLeftIcon,
   CodeIcon,
   FileDirectoryFillIcon,
@@ -18,8 +6,16 @@ import {
   GearIcon,
   InfoIcon,
   XCircleIcon,
-  XIcon,
 } from '@primer/octicons-react';
+import {
+  Box,
+  Button,
+  SideNav,
+  StyledOcticon,
+  Text,
+  useConfirm,
+} from '@primer/react';
+import React, { useCallback } from 'react';
 import {
   Link,
   NavLink,
@@ -28,8 +24,6 @@ import {
   useLocation,
   useNavigate,
 } from 'react-router-dom';
-import React, { useCallback } from 'react';
-
 import KeyPressHandler from '../../components/KeyPressHandler/KeyPressHandler';
 import Settings_Directories from './Settings_Directories';
 import Settings_FilteredPatterns from './Settings_FilteredPatterns';

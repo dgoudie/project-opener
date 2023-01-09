@@ -11,8 +11,6 @@ import React, {
 import { FilteredPatternContext } from '../../providers/FilteredPatternProvider';
 import ListWithActions from '../ListWithActions/ListWithActions';
 import { SnackbarContext } from '../../providers/SnackbarProvider';
-import { filteredPatternsTable } from '../../indexed-db';
-import { useLiveQuery } from 'dexie-react-hooks';
 
 interface Props extends BoxProps {}
 
