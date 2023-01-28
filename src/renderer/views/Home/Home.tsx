@@ -153,7 +153,7 @@ function HomeFilterList({ projectCountsByType }: HomeFilterListProps) {
         >
           <NavList.LeadingVisual>
             <img
-              src={`/assets/${type}.png`}
+              src={require(`../../../assets/${type}.png`)}
               className={styles.navListItemIcon}
             />
           </NavList.LeadingVisual>
@@ -258,7 +258,7 @@ function Project({ project, selected }: ProjectProps) {
     >
       <Box height={24} width={36}>
         <img
-          src={`/assets/${project.type}.png`}
+          src={require(`../../../assets/${project.type}.png`)}
           height={'100%'}
           width={'100%'}
           style={{ objectFit: 'contain' }}

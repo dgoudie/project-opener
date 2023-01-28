@@ -20,12 +20,13 @@ if (require('electron-squirrel-startup') || !gotTheLock) {
 export let mainWindow: BrowserWindow;
 
 const createWindow = () => {
+  console.log(path.join(__dirname, 'assets/logo.ico'));
   // Create the browser window.
   mainWindow = new BrowserWindow({
     title: 'project-opener',
     width: 1300,
     height: 800,
-    icon: path.join(__dirname, 'logo.ico'),
+    icon: path.join(__dirname, 'assets/logo.ico'),
     webPreferences: {
       preload: PROJECT_OPENER_PRELOAD_WEBPACK_ENTRY,
     },

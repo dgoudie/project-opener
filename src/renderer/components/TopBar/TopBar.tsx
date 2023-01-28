@@ -8,18 +8,17 @@ import {
   Tooltip,
 } from '@primer/react';
 import {
-  ChevronDownIcon,
   FileDirectoryIcon,
   GearIcon,
   HorizontalRuleIcon,
   HourglassIcon,
   SyncIcon,
-  XIcon,
 } from '@primer/octicons-react';
 import { Link, useParams } from 'react-router-dom';
 import React, { useContext, useEffect, useRef } from 'react';
 
 import { DirectoryContext } from '../../providers/DirectoryProvider';
+import Logo from '../../../assets/logo.png';
 import { projectsTable } from '../../indexed-db';
 import { useDebounce } from '@react-hook/debounce';
 import { useLiveQuery } from 'dexie-react-hooks';
@@ -86,7 +85,7 @@ export default function TopBar({ searchTextChanged }: Props) {
         style={{ userSelect: 'none' }}
       >
         <Box height={20}>
-          <img src='/assets/logo.png' height={'100%'}></img>
+          <img src={Logo} height={'100%'}></img>
         </Box>
         <Text fontFamily="'Roboto Slab', serif">project-opener</Text>
       </Box>
