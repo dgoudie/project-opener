@@ -1,4 +1,3 @@
-import { Box, useColorSchemeVar, useTheme } from '@primer/react';
 import {
   HashRouter,
   Route,
@@ -17,24 +16,26 @@ import FirstTimeSetupChecker from './components/FirstTimeSetupChecker/FirstTimeS
 import Home from './views/Home/Home';
 import Settings from './views/Settings/Settings';
 import SettingsProvider from './providers/SettingsProvider';
-import primatives from '@primer/primitives';
+import styled from 'styled-components';
+import { themeGet } from '@primer/react';
+
+const Root = styled.div`
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: ${themeGet('colors.canvas.default')};
+  *::-webkit-scrollbar {
+    width: 10px;
+    background: transparent;
+  }
+  *::-webkit-scrollbar-thumb {
+    background: ${themeGet('colors.fg.subtle')};
+  }
+`;
 
 export default function App() {
-  const { theme } = useTheme();
-  const boxBackground = useColorSchemeVar(
-    {
-      light: primatives.colors.light.scale.gray[1],
-      dark: primatives.colors.dark.scale.gray[9],
-    },
-    primatives.colors.light.scale.gray[1]
-  );
   return (
-    <Box
-      bg={boxBackground}
-      height='100vh'
-      display={'flex'}
-      flexDirection='column'
-    >
+    <Root>
       <SettingsProvider>
         <DirectoryProvider>
           <FilteredPatternProvider>
@@ -54,7 +55,7 @@ export default function App() {
           </FilteredPatternProvider>
         </DirectoryProvider>
       </SettingsProvider>
-    </Box>
+    </Root>
   );
 }
 

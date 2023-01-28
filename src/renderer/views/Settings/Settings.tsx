@@ -1,3 +1,4 @@
+import { Box, NavList, useConfirm } from '@primer/react';
 import {
   ChevronLeftIcon,
   CodeIcon,
@@ -7,23 +8,9 @@ import {
   InfoIcon,
   XCircleIcon,
 } from '@primer/octicons-react';
-import {
-  Box,
-  Button,
-  SideNav,
-  StyledOcticon,
-  Text,
-  useConfirm,
-} from '@primer/react';
 import React, { useCallback } from 'react';
-import {
-  Link,
-  NavLink,
-  Route,
-  Routes,
-  useLocation,
-  useNavigate,
-} from 'react-router-dom';
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+
 import KeyPressHandler from '../../components/KeyPressHandler/KeyPressHandler';
 import Settings_Directories from './Settings_Directories';
 import Settings_FilteredPatterns from './Settings_FilteredPatterns';
@@ -68,7 +55,7 @@ export default function Settings() {
       <Box display='grid' gridTemplateRows='max-content auto' height='100%'>
         <Box
           bg='canvas.subtle'
-          padding='.5rem'
+          padding='1rem'
           display='grid'
           gridTemplateColumns='max-content max-content'
           justifyContent='space-between'
@@ -76,22 +63,7 @@ export default function Settings() {
             //@ts-ignore
             WebkitAppRegion: 'drag',
           }}
-        >
-          <Link to={'/'} style={{ textDecoration: 'none' }}>
-            <Button
-              leadingIcon={ChevronLeftIcon}
-              variant='invisible'
-              style={{
-                justifySelf: 'start',
-                cursor: 'pointer',
-                //@ts-ignore
-                WebkitAppRegion: 'no-drag',
-              }}
-            >
-              Home
-            </Button>
-          </Link>
-        </Box>
+        ></Box>
         <Box
           display='grid'
           gridTemplateColumns='max-content auto'
@@ -133,37 +105,39 @@ function SettingsNav() {
     }
   }, [confirm]);
   return (
-    <Box
-      padding='1rem 0 1rem 1rem'
-      display={'flex'}
-      flexDirection='column'
-      justifyContent={'space-between'}
-    >
-      <SideNav aria-label='Settings Navigation' bordered>
+    <Box paddingLeft='.5rem'>
+      <NavList>
+        <NavList.Item href={`#/`}>
+          <NavList.LeadingVisual>
+            <ChevronLeftIcon />
+          </NavList.LeadingVisual>
+          Home
+        </NavList.Item>
+        <NavList.Divider />
         {settingsRoutes.map((route) => {
           return (
-            <SideNav.Link
-              as={NavLink}
-              to={`/settings${route.pathname}`}
+            <NavList.Item
+              href={`#/settings${route.pathname}`}
               key={route.pathname}
-              selected={`/settings${route.pathname}` === pathname}
+              aria-current={
+                `/settings${route.pathname}` === pathname ? 'page' : false
+              }
             >
-              <StyledOcticon sx={{ mr: 2 }} size={16} icon={route.icon} />
-              <Text>{route.name}</Text>
-            </SideNav.Link>
+              <NavList.LeadingVisual>
+                <route.icon />
+              </NavList.LeadingVisual>
+              {route.name}
+            </NavList.Item>
           );
         })}
-      </SideNav>
-      <SideNav aria-label='Settings Navigation' bordered>
-        <SideNav.Link
-          as={'button'}
-          onClick={confirmExit}
-          style={{ fontFamily: 'inherit' }}
-        >
-          <StyledOcticon sx={{ mr: 2 }} size={16} icon={XCircleIcon} />
-          <Text fontSize={14}>Quit</Text>
-        </SideNav.Link>
-      </SideNav>
+        <NavList.Divider />
+        <NavList.Item onClick={confirmExit}>
+          <NavList.LeadingVisual>
+            <XCircleIcon />
+          </NavList.LeadingVisual>
+          Quit
+        </NavList.Item>
+      </NavList>
     </Box>
   );
 }

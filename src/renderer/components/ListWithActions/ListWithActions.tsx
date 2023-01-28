@@ -1,4 +1,11 @@
-import { Box, Button, Text, Tooltip, useTheme } from '@primer/react';
+import {
+  Box,
+  Button,
+  IconButton,
+  Text,
+  Tooltip,
+  useTheme,
+} from '@primer/react';
 
 import { Icon } from '@primer/octicons-react';
 import React from 'react';
@@ -36,14 +43,14 @@ export default function ListWithActions({ items }: Props) {
           <Box display={'flex'} gridGap='0.5rem'>
             {actions.map(
               ({ icon, hint, isDanger, onClick, disabled = false }, index) => (
-                <Button
+                <IconButton
                   key={index}
-                  leadingIcon={icon}
+                  icon={icon}
                   variant={isDanger ? 'danger' : 'default'}
                   onClick={onClick}
                   aria-label={hint}
                   disabled={disabled}
-                ></Button>
+                />
               )
             )}
           </Box>

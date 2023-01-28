@@ -1,17 +1,20 @@
 {
   "compilerOptions": {
+    "target": "ES6",
     "allowJs": true,
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "module": "esnext",
+    "module": "commonjs",
     "skipLibCheck": true,
+    "esModuleInterop": true,
     "noImplicitAny": true,
-    "allowSyntheticDefaultImports": true,
     "sourceMap": true,
+    "baseUrl": ".",
     "outDir": "dist",
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "jsx": "react-jsx",
-    "types": ["react/next", "react-dom/next"]
+    "jsx": "react",
+    "paths": {
+      "*": ["node_modules/*"]
+    }
   },
-  "include": ["src"]
+  "include": ["src/**/*"]
 }

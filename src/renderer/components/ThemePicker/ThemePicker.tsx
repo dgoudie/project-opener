@@ -1,4 +1,9 @@
-import { ActionList, ActionMenu, ThemeProviderProps } from '@primer/react';
+import {
+  ActionList,
+  ActionMenu,
+  SegmentedControl,
+  ThemeProviderProps,
+} from '@primer/react';
 import {
   DeviceDesktopIcon,
   Icon,
@@ -23,12 +28,10 @@ export default function ThemePicker() {
   const { THEME: selectedItemKey, setTheme } = useContext(SettingsContext);
 
   const onSelect = useCallback(
-    async (selectedItem: ThemeProviderProps['colorMode']) => {
-      if (!selectedItem) {
-        return;
-      }
-      await setTheme(selectedItem);
-      location.reload();
+    async (selectedIndex: number) => {
+      const selectedItem = items[selectedIndex];
+      await setTheme(selectedItem.key);
+      // location.reload();
     },
     [setTheme]
   );
@@ -43,29 +46,16 @@ export default function ThemePicker() {
   }
 
   return (
-    <ActionMenu>
-      <ActionMenu.Button
-        aria-label='select theme mode'
-        leadingIcon={selectedItem.icon}
-      >
-        {selectedItem.text}
-      </ActionMenu.Button>
-      <ActionMenu.Overlay width='medium'>
-        <ActionList selectionVariant='single'>
-          {items.map(({ text, key, icon: Icon }, index) => (
-            <ActionList.Item
-              key={index}
-              selected={key === selectedItem.key}
-              onSelect={() => onSelect(key)}
-            >
-              <ActionList.LeadingVisual>
-                <Icon />
-              </ActionList.LeadingVisual>
-              {text}
-            </ActionList.Item>
-          ))}
-        </ActionList>
-      </ActionMenu.Overlay>
-    </ActionMenu>
+    <SegmentedControl aria-label='File view' onChange={onSelect}>
+      {items.map(({ text, key, icon: Icon }, index) => (
+        <SegmentedControl.Button
+          key={text}
+          selected={key === selectedItem.key}
+          leadingIcon={Icon}
+        >
+          {text}
+        </SegmentedControl.Button>
+      ))}
+    </SegmentedControl>
   );
 }

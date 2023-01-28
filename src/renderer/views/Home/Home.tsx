@@ -1,15 +1,24 @@
-import { Box, FilterList, Text, useTheme } from '@primer/react';
+import { Box, NavList, Text, themeGet } from '@primer/react';
 import {
   ProjectDatabaseType,
   ProjectType,
   ProjectTypeNameMap,
   ProjectTypes,
 } from '../../../constants/types';
-import React, { useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
+import { HomeIcon } from '@primer/octicons-react';
 import KeyPressHandler from '../../components/KeyPressHandler/KeyPressHandler';
 import TopBar from '../../components/TopBar/TopBar';
+import classNames from 'classnames';
 import { projectsTable } from '../../indexed-db';
+import styled from 'styled-components';
 import styles from './Home.module.css';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useParams } from 'react-router-dom';
@@ -76,9 +85,31 @@ export default function Home() {
     return map;
   }, [allProjects]);
 
+  const [selectedProject, setSelectedProject] = useState(0);
+
+  useEffect(() => {
+    setSelectedProject(0);
+  }, [projectsMatchingType]);
+
+  const onDownArrow = useCallback(() => {
+    if (selectedProject < projectsMatchingType.length - 1) {
+      setSelectedProject(selectedProject + 1);
+    }
+  }, [selectedProject, projectsMatchingType]);
+
+  const onUpArrow = useCallback(() => {
+    if (selectedProject > 0) {
+      setSelectedProject(selectedProject - 1);
+    }
+  }, [selectedProject]);
+
   return (
     <>
-      <KeyPressHandler onEscape={window.BRIDGE.hideApplication} />
+      <KeyPressHandler
+        onEscape={window.BRIDGE.hideApplication}
+        onDownArrow={onDownArrow}
+        onUpArrow={onUpArrow}
+      />
       <TopBar searchTextChanged={setSearchText} />
       <Box
         display='grid'
@@ -88,7 +119,10 @@ export default function Home() {
         flex={1}
       >
         <HomeFilterList projectCountsByType={projectCountsByType} />
-        <HomeProjects projects={projectsMatchingType} />
+        <HomeProjects
+          projects={projectsMatchingType}
+          selectedProject={selectedProject}
+        />
       </Box>
     </>
   );
@@ -112,37 +146,48 @@ function HomeFilterList({ projectCountsByType }: HomeFilterListProps) {
   const children = useMemo(
     () =>
       projectTypesToShow.map((type) => (
-        <FilterList.Item
+        <NavList.Item
           key={type}
-          selected={filter === type}
-          count={projectCountsByType.get(type)}
+          aria-current={filter === type ? 'page' : false}
           href={`#/${type}`}
         >
+          <NavList.LeadingVisual>
+            <img
+              src={`/assets/${type}.png`}
+              className={styles.navListItemIcon}
+            />
+          </NavList.LeadingVisual>
           {ProjectTypeNameMap.get(type)}
-        </FilterList.Item>
+          <NavList.TrailingVisual>
+            {projectCountsByType.get(type)}
+          </NavList.TrailingVisual>
+        </NavList.Item>
       )),
     [projectTypesToShow]
   );
 
   return (
-    <FilterList>
-      <FilterList.Item
-        selected={!filter}
-        count={projectCountsByType.get('ALL')}
-        href='#/'
-      >
+    <NavList>
+      <NavList.Item href='#/' aria-current={!filter ? 'page' : false}>
+        <NavList.LeadingVisual>
+          <HomeIcon />
+        </NavList.LeadingVisual>
         All
-      </FilterList.Item>
+        <NavList.TrailingVisual>
+          {projectCountsByType.get('ALL')}
+        </NavList.TrailingVisual>
+      </NavList.Item>
       {children}
-    </FilterList>
+    </NavList>
   );
 }
 
 type HomeProjectsProps = {
   projects: ProjectDatabaseType[];
+  selectedProject: number;
 };
 
-function HomeProjects({ projects }: HomeProjectsProps) {
+function HomeProjects({ projects, selectedProject }: HomeProjectsProps) {
   return (
     <Box
       display={'flex'}
@@ -152,28 +197,64 @@ function HomeProjects({ projects }: HomeProjectsProps) {
       pb={2}
       gridGap={2}
     >
-      {projects.map((project) => (
-        <Project key={project.path} project={project} />
+      {projects.map((project, index) => (
+        <Project
+          key={project.path}
+          project={project}
+          selected={selectedProject === index}
+        />
       ))}
     </Box>
   );
 }
 
+const ProjectWrapper = styled.button`
+  display: flex;
+  align-items: center;
+  padding: 2px 14px;
+  user-select: none;
+  gap: 16px;
+  -webkit-appearance: none;
+  font-family: inherit;
+  border: none;
+  background: transparent;
+  text-align: start;
+  cursor: pointer;
+  border-radius: 6px;
+  color: ${themeGet('colors.btn.text')};
+  border: 2px solid transparent;
+  &:hover {
+    background: ${themeGet('colors.btn.hoverBg')};
+  }
+  &:active {
+    background: ${themeGet('colors.btn.activeBg')};
+  }
+  &.selected {
+    border: 2px solid ${themeGet('colors.btn.activeBorder')};
+  }
+`;
+
 type ProjectProps = {
   project: ProjectDatabaseType;
+  selected: boolean;
 };
 
-function Project({ project }: ProjectProps) {
-  const { theme } = useTheme();
+function Project({ project, selected }: ProjectProps) {
+  const previouslySelected = useRef(false);
+
+  const wrapper = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!previouslySelected.current && selected) {
+      wrapper.current?.scrollIntoView({ block: 'center' });
+    }
+    previouslySelected.current = selected;
+  });
+
   return (
-    <Box
-      display={'flex'}
-      // bg='canvas.overlay'
-      px={3}
-      py={1}
-      alignItems='center'
-      gridGap={3}
-      className={styles.Project}
+    <ProjectWrapper
+      className={classNames(selected && 'selected')}
+      ref={wrapper}
     >
       <Box height={24} width={36}>
         <img
@@ -184,13 +265,13 @@ function Project({ project }: ProjectProps) {
         ></img>
       </Box>
       <Box flex={1} display={'grid'} gridTemplateRows='1fr 1fr'>
-        <Text fontWeight={600} fontSize={3} className={styles.ProjectText}>
+        <Text fontWeight={600} fontSize={3} className={styles.projectText}>
           {project.name}
         </Text>
-        <Text fontSize={1} className={styles.ProjectText}>
+        <Text fontSize={1} className={styles.projectText}>
           {project.path}
         </Text>
       </Box>
-    </Box>
+    </ProjectWrapper>
   );
 }

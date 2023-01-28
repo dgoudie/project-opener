@@ -5,8 +5,8 @@ import React, {
   useEffect,
   useState,
 } from 'react';
+import { ThemeProviderProps, useTheme } from '@primer/react';
 
-import { ThemeProviderProps } from '@primer/react';
 import { settingsTable } from '../indexed-db';
 
 type SettingsState = {
@@ -31,6 +31,8 @@ export default function SettingsProvider({
 }: React.PropsWithChildren<{}>) {
   const [settingsState, setSettingsState] = useState<SettingsState>();
 
+  const { setColorMode } = useTheme();
+
   useEffect(() => {
     if (!settingsState) {
       return;
@@ -53,6 +55,7 @@ export default function SettingsProvider({
     async (THEME: ThemeProviderProps['colorMode']) => {
       await settingsTable.update('THEME', { value: THEME });
       setSettingsState({ ...settingsState, THEME });
+      setColorMode(THEME);
     },
     [settingsState]
   );
