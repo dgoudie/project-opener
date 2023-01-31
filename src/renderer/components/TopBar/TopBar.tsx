@@ -15,10 +15,11 @@ import {
   SyncIcon,
 } from '@primer/octicons-react';
 import { Link, useParams } from 'react-router-dom';
-import React, { useContext, useEffect, useRef } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import { DirectoryContext } from '../../providers/DirectoryProvider';
 import Logo from '../../../assets/logo.png';
+import ReactFocusLock from 'react-focus-lock';
 import { projectsTable } from '../../indexed-db';
 import { useDebounce } from '@react-hook/debounce';
 import { useLiveQuery } from 'dexie-react-hooks';
@@ -33,6 +34,8 @@ export default function TopBar({ searchTextChanged }: Props) {
   const textInputRef = useRef<HTMLInputElement>(null);
 
   const [searchText, setSearchText] = useDebounce('', 150);
+
+  const [rescanMenuOpen, setRescanMenuOpen] = useState(false);
 
   const projectCount = useLiveQuery(
     () => projectsTable.count().then((count) => count.toString()),
@@ -67,15 +70,17 @@ export default function TopBar({ searchTextChanged }: Props) {
           WebkitAppRegion: 'no-drag',
         }}
       >
-        <TextInput
-          type={'search'}
-          block
-          leadingVisual={`Search ${projectCount} projects for:`}
-          onChange={(event) =>
-            setSearchText((event.target as HTMLInputElement).value)
-          }
-          ref={textInputRef}
-        />
+        <ReactFocusLock disabled={rescanMenuOpen} persistentFocus={true}>
+          <TextInput
+            type={'search'}
+            block
+            leadingVisual={`Search ${projectCount} projects for:`}
+            onChange={(event) =>
+              setSearchText((event.target as HTMLInputElement).value)
+            }
+            ref={textInputRef}
+          />
+        </ReactFocusLock>
       </Box>
       <Box
         display='grid'
@@ -89,12 +94,23 @@ export default function TopBar({ searchTextChanged }: Props) {
         </Box>
         <Text fontFamily="'Roboto Slab', serif">project-opener</Text>
       </Box>
-      <TopBarButtons />
+      <TopBarButtons
+        rescanMenuOpen={rescanMenuOpen}
+        onRescanMenuOpenChange={setRescanMenuOpen}
+      />
     </Box>
   );
 }
 
-function TopBarButtons() {
+type TopBarButtonsProps = {
+  rescanMenuOpen: boolean;
+  onRescanMenuOpenChange: (open: boolean) => void;
+};
+
+function TopBarButtons({
+  rescanMenuOpen,
+  onRescanMenuOpenChange,
+}: TopBarButtonsProps) {
   const { directories, scanDirectory } = useContext(DirectoryContext);
 
   const buttonStyles: React.CSSProperties = {
@@ -118,7 +134,10 @@ function TopBarButtons() {
       >
         <Tooltip aria-label='Scan Directories' direction='s'>
           <Box position='relative'>
-            <ActionMenu>
+            <ActionMenu
+              open={rescanMenuOpen}
+              onOpenChange={onRescanMenuOpenChange}
+            >
               <ActionMenu.Button variant='invisible' style={buttonStyles}>
                 <SyncIcon size={18} />
               </ActionMenu.Button>

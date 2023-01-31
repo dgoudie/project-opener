@@ -1,4 +1,4 @@
-import { Box, NavList, useConfirm } from '@primer/react';
+import { Box, NavList, themeGet, useConfirm } from '@primer/react';
 import {
   ChevronLeftIcon,
   CodeIcon,
@@ -15,6 +15,7 @@ import KeyPressHandler from '../../components/KeyPressHandler/KeyPressHandler';
 import Settings_Directories from './Settings_Directories';
 import Settings_FilteredPatterns from './Settings_FilteredPatterns';
 import Settings_General from './Settings_General';
+import styled from 'styled-components';
 
 const settingsRoutes = [
   {
@@ -47,23 +48,20 @@ const settingsRoutes = [
   },
 ];
 
+const SettingsHeader = styled.div`
+  background: ${themeGet('colors.canvas.subtle')};
+  transition: background 100ms linear;
+  padding: 1rem;
+  -webkit-app-region: drag;
+`;
+
 export default function Settings() {
   const navigate = useNavigate();
   return (
     <>
       <KeyPressHandler onEscape={() => navigate('/')} />
       <Box display='grid' gridTemplateRows='max-content auto' height='100%'>
-        <Box
-          bg='canvas.subtle'
-          padding='1rem'
-          display='grid'
-          gridTemplateColumns='max-content max-content'
-          justifyContent='space-between'
-          style={{
-            //@ts-ignore
-            WebkitAppRegion: 'drag',
-          }}
-        ></Box>
+        <SettingsHeader></SettingsHeader>
         <Box
           display='grid'
           gridTemplateColumns='max-content auto'

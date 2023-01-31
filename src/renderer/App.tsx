@@ -1,3 +1,9 @@
+import DirectoryProvider, {
+  DirectoryContext,
+} from './providers/DirectoryProvider';
+import FilteredPatternProvider, {
+  FilteredPatternContext,
+} from './providers/FilteredPatternProvider';
 import {
   HashRouter,
   Route,
@@ -6,16 +12,16 @@ import {
   useNavigate,
 } from 'react-router-dom';
 import React, { useContext, useEffect } from 'react';
+import SettingsProvider, {
+  SettingsContext,
+} from './providers/SettingsProvider';
 import SnackbarProvider, {
   SnackbarContext,
 } from './providers/SnackbarProvider';
 
-import DirectoryProvider from './providers/DirectoryProvider';
-import FilteredPatternProvider from './providers/FilteredPatternProvider';
 import FirstTimeSetupChecker from './components/FirstTimeSetupChecker/FirstTimeSetupChecker';
 import Home from './views/Home/Home';
 import Settings from './views/Settings/Settings';
-import SettingsProvider from './providers/SettingsProvider';
 import styled from 'styled-components';
 import { themeGet } from '@primer/react';
 
@@ -24,6 +30,7 @@ const Root = styled.div`
   display: flex;
   flex-direction: column;
   background: ${themeGet('colors.canvas.default')};
+  transition: background 100ms linear;
   *::-webkit-scrollbar {
     width: 10px;
     background: transparent;
@@ -41,6 +48,7 @@ export default function App() {
           <FilteredPatternProvider>
             <SnackbarProvider>
               <HashRouter basename='/'>
+                <DirectoryWatcherInitializer />
                 <NavigateHomeListener />
                 <ExceptionListener />
                 <FirstTimeSetupChecker />
@@ -85,5 +93,21 @@ const RouteReporter: React.FunctionComponent = () => {
   useEffect(() => {
     window.BRIDGE?.reportActiveRoute(pathname);
   }, [pathname]);
+  return null;
+};
+
+const DirectoryWatcherInitializer: React.FC = () => {
+  const { ENABLE_FILE_WATCHING } = useContext(SettingsContext);
+  const { directories } = useContext(DirectoryContext);
+  const { filteredPatterns } = useContext(FilteredPatternContext);
+
+  useEffect(() => {
+    window.BRIDGE.initializeDirectoryWatcherJob(
+      directories,
+      filteredPatterns,
+      ENABLE_FILE_WATCHING
+    );
+  }, []);
+
   return null;
 };

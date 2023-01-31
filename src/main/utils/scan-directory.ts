@@ -1,10 +1,10 @@
-import { BrowserWindow, ipcMain } from 'electron';
 import {
   ProjectDatabaseType,
   ProjectTypeFileNameMap,
 } from '../../constants/types';
-import { dirname, normalize, sep } from 'path';
+import { normalize, sep } from 'path';
 
+import { BrowserWindow } from 'electron';
 import { REPORT_EXCEPTION } from '../../constants/ipc-renderer-constants';
 import { globby } from 'globby';
 import { parseStringPromise } from 'xml2js';
@@ -12,17 +12,18 @@ import { readFile } from 'fs-extra';
 import toml from 'toml';
 
 export const scanDirectory = async (
-  path: string,
+  directoryPath: string,
   filteredPatterns: string[],
   window: BrowserWindow
 ): Promise<ProjectDatabaseType[]> => {
   const projectFileNamesCommaDelimited = Array.from(
     ProjectTypeFileNameMap.values()
   ).join(',');
-  const pattern = `${path}/**/{${projectFileNamesCommaDelimited}}`.replace(
-    /\\/g,
-    '/'
-  );
+  const pattern =
+    `${directoryPath}/**/{${projectFileNamesCommaDelimited}}`.replace(
+      /\\/g,
+      '/'
+    );
   let paths = await globby(pattern, {
     caseSensitiveMatch: false,
     ignore: filteredPatterns,
@@ -32,84 +33,66 @@ export const scanDirectory = async (
 
   paths = paths.map((path) => normalize(path));
 
-  paths = removeNestedPaths(paths);
-
-  return convertFilesToProjects(paths, window);
+  return convertFilesToProjects(paths, window, directoryPath);
 };
 
-const removeNestedPaths = (paths: string[]): string[] => {
-  const pathWithoutFileNamesSet = new Set(paths.map((path) => dirname(path)));
-  paths = paths.filter((path) => {
-    let parentDirectoryPaths = getParentDirectoryPaths(path);
-    const anyParentDirectoryExistsInMap = !!parentDirectoryPaths.find(
-      (parentPath) => pathWithoutFileNamesSet.has(parentPath)
-    );
-    return !anyParentDirectoryExistsInMap;
-  });
-  return paths;
-};
-
-const getParentDirectoryPaths = (path: string) => {
-  const parentDirectoryPaths = [];
-  let dirSplit = dirname(path).split(sep);
-  dirSplit.pop();
-
-  while (dirSplit.length > 0) {
-    const rejoined = dirSplit.join(sep);
-    if (!!rejoined) {
-      parentDirectoryPaths.push(rejoined);
-    }
-    dirSplit.pop();
-  }
-  return parentDirectoryPaths;
-};
-
-const convertFilesToProjects = (paths: string[], window: BrowserWindow) => {
+const convertFilesToProjects = (
+  paths: string[],
+  window: BrowserWindow,
+  directoryPath: string
+) => {
   return Promise.all(
-    paths.map(async (path) => {
-      try {
-        const file = await readFile(path, 'utf-8');
-        const type = Array.from(ProjectTypeFileNameMap.entries()).find(
-          ([_projectType, fileName]) => path.toLowerCase().includes(fileName)
-        )[0];
-        let name: Promise<string>;
-        switch (type) {
-          case 'MAVEN':
-            name = getNameFromPomFile(file);
-            break;
-          case 'NPM':
-            name = getNameFromPackageJsonFile(file);
-            break;
-          case 'RUST':
-            name = getNameFromCargoTomlFile(file);
-            break;
-          case 'PYTHON':
-            name = getNameFromPipfile(file);
-            break;
-          case 'GO':
-            name = getNameFromGoModFile(file);
-            break;
-        }
-        if (!name) {
-          throw new Error(
-            `Unable to determine project file for project type ${type}`
-          );
-        }
-        let project: ProjectDatabaseType = {
-          path,
-          name: await name,
-          type,
-          createdAt: new Date(),
-          lastOpenedAt: undefined,
-          openedCount: 0,
-        };
-        return project;
-      } catch (e) {
+    paths.map((path) => {
+      return convertFileToProject(path, directoryPath).catch((e) => {
         const message = `Unable to scan ${path}. (${e.message})`;
         window.webContents.send(REPORT_EXCEPTION, 'warning', message);
-      }
+        return null;
+      });
     })
   ).then((projects) => projects.filter((project) => !!project));
+};
+
+export const convertFileToProject = async (
+  path: string,
+  directoryPath: string
+) => {
+  const file = await readFile(path, 'utf-8');
+  const type = Array.from(ProjectTypeFileNameMap.entries()).find(
+    ([_projectType, fileName]) => path.toLowerCase().includes(fileName)
+  )[0];
+  let name: Promise<string>;
+  switch (type) {
+    case 'MAVEN':
+      name = getNameFromPomFile(file);
+      break;
+    case 'NPM':
+      name = getNameFromPackageJsonFile(file);
+      break;
+    case 'RUST':
+      name = getNameFromCargoTomlFile(file);
+      break;
+    case 'PYTHON':
+      name = getNameFromPipfile(file);
+      break;
+    case 'GO':
+      name = getNameFromGoModFile(file);
+      break;
+  }
+  if (!name) {
+    throw new Error(
+      `Unable to determine project file for project type ${type}`
+    );
+  }
+  let project: ProjectDatabaseType = {
+    directory: directoryPath,
+    path,
+    name: await name,
+    type,
+    createdAt: new Date(),
+    lastOpenedAt: undefined,
+    openedCount: 0,
+  };
+  return project;
 };
 
 const getNameFromPomFile = async (data: string): Promise<string> => {

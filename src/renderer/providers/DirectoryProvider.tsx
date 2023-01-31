@@ -4,11 +4,13 @@ import {
 } from '../../constants/types';
 import { createContext, useCallback, useEffect, useState } from 'react';
 import {
+  db,
   directoriesTable,
   filteredPatternsTable,
   projectsTable,
 } from '../indexed-db';
 
+import Dexie from 'dexie';
 import React from 'react';
 import produce from 'immer';
 import { validateDirectory } from '../../utils/validate-directory';
@@ -52,26 +54,83 @@ export default function DirectoryProvider({
     syncStateWithDatabase();
   }, []);
 
-  const scanDirectory = useCallback((path: string) => {
+  useEffect(() => {
+    window.BRIDGE.onProjectAdded(async (_event, project) => {
+      db.transaction('rw', projectsTable, async () => {
+        await projectsTable.add(project);
+        await removeNestedPaths();
+      });
+    });
+    window.BRIDGE.onProjectChanged(async (_event, path, newProjectName) => {
+      await projectsTable
+        .where('path')
+        .equals(path)
+        .modify({ name: newProjectName });
+    });
+    window.BRIDGE.onProjectRemoved(async (_event, path) => {
+      await projectsTable.delete(path);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (typeof directories !== 'undefined') {
+      window.BRIDGE.sendDirectoriesToFileWatcher(directories);
+    }
+  }, [directories]);
+
+  const scanDirectory = useCallback((directoryPath: string) => {
     const scanAsync = async () => {
       setDirectories(
         produce((draft) => {
-          draft.find((directory) => directory.path === path).currentlyScanning =
-            true;
+          draft.find(
+            (directory) => directory.path === directoryPath
+          ).currentlyScanning = true;
         })
       );
       const filteredPatterns = (await filteredPatternsTable.toArray()).map(
         ({ pattern }) => pattern
       );
-      const foundProjects = await window.BRIDGE?.scanDirectory(
-        path,
+      let foundProjects = await window.BRIDGE?.scanDirectory(
+        directoryPath,
         filteredPatterns
       );
-      await updateDBWithResultsFromScan(foundProjects);
+      const currentProjectsForPath = await projectsTable
+        .where('directory')
+        .equals(directoryPath)
+        .toArray();
+      const foundProjectPaths = new Set(
+        foundProjects.map((project) => project.path)
+      );
+      const foundProjectsPathToNameMap = new Map(
+        foundProjects.map((project) => [project.path, project.name])
+      );
+      const currentProjectPaths = new Set(
+        currentProjectsForPath.map((project) => project.path)
+      );
+      const projectsToAdd: ProjectDatabaseType[] = foundProjects.filter(
+        (project) => !currentProjectPaths.has(project.path)
+      );
+      const projectsToRemove: string[] = Array.from(currentProjectPaths).filter(
+        (projectPath) => !foundProjectPaths.has(projectPath)
+      );
+      db.transaction('rw', projectsTable, async () => {
+        await projectsTable.bulkAdd(projectsToAdd);
+        await projectsTable.bulkDelete(projectsToRemove);
+        await removeNestedPaths();
+        await projectsTable
+          .where('directory')
+          .equals(directoryPath)
+          .modify(
+            (project) =>
+              (project.name = foundProjectsPathToNameMap.get(project.path))
+          );
+      });
+
       setDirectories(
         produce((draft) => {
-          draft.find((directory) => directory.path === path).currentlyScanning =
-            false;
+          draft.find(
+            (directory) => directory.path === directoryPath
+          ).currentlyScanning = false;
         })
       );
     };
@@ -123,12 +182,14 @@ export default function DirectoryProvider({
   );
 }
 
-const updateDBWithResultsFromScan = async (
-  projectsFound: ProjectDatabaseType[]
-) => {
-  await projectsTable
-    .where('path')
-    .noneOf(projectsFound.map((project) => project.path))
-    .delete();
-  await projectsTable.bulkAdd(projectsFound).catch(() => undefined);
+const removeNestedPaths = async () => {
+  db.transaction('rw', projectsTable, async () => {
+    const allProjectPaths = (await projectsTable
+      .toCollection()
+      .primaryKeys()) as string[];
+    const nestedPaths = await Dexie.waitFor(
+      window.BRIDGE.determineNestedProjects(allProjectPaths)
+    );
+    await projectsTable.bulkDelete(nestedPaths);
+  });
 };

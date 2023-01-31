@@ -9,7 +9,7 @@ import Dexie from 'dexie';
 
 export const db = new Dexie('ProjectOpener');
 db.version(1).stores({
-  projects: '[&path+name],type,openedCount',
+  projects: 'path,name,directory,type,openedCount',
   settings: 'key',
   ides: 'projectType',
   filteredPatterns: 'pattern',
@@ -29,6 +29,8 @@ db.on('populate', () => {
     { key: 'SETUP_COMPLETE', value: false },
     { key: 'THEME', value: 'auto' },
     { key: 'HOTKEY', value: 'CommandOrControl+Shift+O' },
+    { key: 'ENABLE_FILE_WATCHING', value: true },
+    { key: 'RESCAN_ON_START', value: true },
   ]);
   filteredPatternsTable.bulkAdd([
     { pattern: '**/.git/**', createdAt },

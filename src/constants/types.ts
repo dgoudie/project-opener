@@ -36,6 +36,7 @@ export interface IdeDatabaseType extends Ide {
 }
 
 export interface ProjectDatabaseType {
+  directory: string;
   path: string;
   name: string;
   type: ProjectType;

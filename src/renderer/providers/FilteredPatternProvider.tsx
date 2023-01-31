@@ -32,6 +32,12 @@ export default function FilteredPatternProvider({
     syncStateWithDatabase();
   }, []);
 
+  useEffect(() => {
+    if (typeof filteredPatterns !== 'undefined') {
+      window.BRIDGE.sendFilteredPatternsToFileWatcher(filteredPatterns);
+    }
+  }, [filteredPatterns]);
+
   const addFilteredPattern = useCallback((pattern: string) => {
     const addAsync = async () => {
       const newDirectory: FilteredPatternDatabaseType = {

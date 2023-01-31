@@ -19,14 +19,16 @@ export default function HotkeyPicker() {
 
   const decodedHotkey = useMemo(() => decodeHotKey(HOTKEY), [HOTKEY]);
 
-  const [hotkeyCaptured, setHotkeyCaptured] = useState(decodedHotkey);
-  const [hotkeyCapturedIsValid, setHotkeyCapturedIsValid] = useState(false);
-
   const isHotkeyValid = useCallback((decodedHotKey: string[]) => {
     return !['ctrl', 'alt', 'shift'].find(
       (invalid) => decodedHotKey[decodedHotKey.length - 1] === invalid
     );
   }, []);
+
+  const [hotkeyCaptured, setHotkeyCaptured] = useState(decodedHotkey);
+  const [hotkeyCapturedIsValid, setHotkeyCapturedIsValid] = useState(
+    isHotkeyValid(decodedHotkey)
+  );
 
   const onHotkeyJsCapture = useCallback(
     (e: KeyboardEvent) => {
@@ -80,6 +82,8 @@ export default function HotkeyPicker() {
     if (isOpen) {
       hotkeys('*', onHotkeyJsCapture);
       window.BRIDGE.registerShowApplicationHotkey();
+      setHotkeyCaptured(decodedHotkey);
+      setHotkeyCapturedIsValid(isHotkeyValid(decodedHotkey));
     } else {
       hotkeys.unbind('*');
       window.BRIDGE.registerShowApplicationHotkey(HOTKEY);

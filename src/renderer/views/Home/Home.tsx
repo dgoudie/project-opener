@@ -3,23 +3,23 @@ import {
   ProjectDatabaseType,
   ProjectType,
   ProjectTypeNameMap,
-  ProjectTypes,
+  ProjectTypes
 } from '../../../constants/types';
 import React, {
   useCallback,
   useEffect,
   useMemo,
   useRef,
-  useState,
+  useState
 } from 'react';
 
+import ButtonLink from '../../components/ButtonLink/ButtonLink';
 import { HomeIcon } from '@primer/octicons-react';
 import KeyPressHandler from '../../components/KeyPressHandler/KeyPressHandler';
 import TopBar from '../../components/TopBar/TopBar';
 import classNames from 'classnames';
 import { projectsTable } from '../../indexed-db';
 import styled from 'styled-components';
-import styles from './Home.module.css';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useParams } from 'react-router-dom';
 
@@ -128,6 +128,12 @@ export default function Home() {
   );
 }
 
+const ProjectTypeNavListImage = styled.img`
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
+`;
+
 type HomeFilterListProps = {
   projectCountsByType: Map<ProjectType | 'ALL', number>;
 };
@@ -152,9 +158,8 @@ function HomeFilterList({ projectCountsByType }: HomeFilterListProps) {
           href={`#/${type}`}
         >
           <NavList.LeadingVisual>
-            <img
+            <ProjectTypeNavListImage
               src={require(`../../../assets/${type}.png`)}
-              className={styles.navListItemIcon}
             />
           </NavList.LeadingVisual>
           {ProjectTypeNameMap.get(type)}
@@ -189,14 +194,7 @@ type HomeProjectsProps = {
 
 function HomeProjects({ projects, selectedProject }: HomeProjectsProps) {
   return (
-    <Box
-      display={'flex'}
-      flexDirection='column'
-      overflowY={'auto'}
-      px={2}
-      pb={2}
-      gridGap={2}
-    >
+    <Box display={'flex'} flexDirection='column' overflowY={'auto'}>
       {projects.map((project, index) => (
         <Project
           key={project.path}
@@ -211,7 +209,7 @@ function HomeProjects({ projects, selectedProject }: HomeProjectsProps) {
 const ProjectWrapper = styled.button`
   display: flex;
   align-items: center;
-  padding: 2px 14px;
+  padding: 6px 14px 12px;
   user-select: none;
   gap: 16px;
   -webkit-appearance: none;
@@ -220,17 +218,23 @@ const ProjectWrapper = styled.button`
   background: transparent;
   text-align: start;
   cursor: pointer;
-  border-radius: 6px;
   color: ${themeGet('colors.btn.text')};
-  border: 2px solid transparent;
+  outline: none;
+  width: 100%;
   &:hover {
-    background: ${themeGet('colors.btn.hoverBg')};
+    background: ${themeGet('colors.btn.bg')};
   }
   &:active {
     background: ${themeGet('colors.btn.activeBg')};
   }
   &.selected {
-    border: 2px solid ${themeGet('colors.btn.activeBorder')};
+    background: ${themeGet('colors.accent.subtle')};
+  }
+  &.selected:hover {
+    background: ${themeGet('colors.accent.muted')};
+  }
+  &.selected:active {
+    background: ${themeGet('colors.accent.emphasis')};
   }
 `;
 
@@ -246,32 +250,49 @@ function Project({ project, selected }: ProjectProps) {
 
   useEffect(() => {
     if (!previouslySelected.current && selected) {
-      wrapper.current?.scrollIntoView({ block: 'center' });
+      wrapper.current?.focus();
     }
     previouslySelected.current = selected;
   });
 
   return (
-    <ProjectWrapper
-      className={classNames(selected && 'selected')}
-      ref={wrapper}
-    >
-      <Box height={24} width={36}>
-        <img
-          src={require(`../../../assets/${project.type}.png`)}
-          height={'100%'}
-          width={'100%'}
-          style={{ objectFit: 'contain' }}
-        ></img>
+    <Box position={'relative'}>
+      <ProjectWrapper
+        className={classNames(selected && 'selected')}
+        ref={wrapper}
+        onClick={() => alert(project.name)}
+      >
+        <Box height={24} width={36}>
+          <img
+            src={require(`../../../assets/${project.type}.png`)}
+            height={'100%'}
+            width={'100%'}
+            style={{ objectFit: 'contain' }}
+          ></img>
+        </Box>
+        <Box flex={1} display='flex' flexDirection='column'>
+          <ProjectText fontWeight={600} fontSize={3}>
+            {project.name}
+          </ProjectText>
+          <ProjectText fontSize={1}>{project.path}</ProjectText>
+          <Box height={'24px'} />
+        </Box>
+      </ProjectWrapper>
+      <Box position={'absolute'} bottom='1rem' left='66px'>
+        <ButtonLink
+          tabIndex={-1}
+          onClick={() => window.BRIDGE.openProjectDirectory(project.path)}
+        >
+          View in Explorer
+        </ButtonLink>
       </Box>
-      <Box flex={1} display={'grid'} gridTemplateRows='1fr 1fr'>
-        <Text fontWeight={600} fontSize={3} className={styles.projectText}>
-          {project.name}
-        </Text>
-        <Text fontSize={1} className={styles.projectText}>
-          {project.path}
-        </Text>
-      </Box>
-    </ProjectWrapper>
+    </Box>
   );
 }
+
+const ProjectText = styled(Text)`
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  min-width: 0;
+  overflow-x: hidden;
+`;

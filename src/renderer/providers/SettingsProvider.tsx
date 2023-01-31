@@ -13,11 +13,15 @@ type SettingsState = {
   HOTKEY: string;
   SETUP_COMPLETE: boolean;
   THEME: ThemeProviderProps['colorMode'];
+  ENABLE_FILE_WATCHING: boolean;
+  RESCAN_ON_START: boolean;
 };
 
 type SettingsMutators = {
   setTheme: (THEME: ThemeProviderProps['colorMode']) => Promise<void>;
   setHotkey: (HOTKEY: string) => Promise<void>;
+  setFileWatchingEnabled: (enabled: boolean) => void;
+  setRescanOnStart: (enabled: boolean) => void;
 };
 
 type SettingsContextType = SettingsState & SettingsMutators;
@@ -38,6 +42,7 @@ export default function SettingsProvider({
       return;
     }
     window.BRIDGE.registerShowApplicationHotkey(settingsState.HOTKEY);
+    window.BRIDGE.enableFileWatching(settingsState.ENABLE_FILE_WATCHING);
   }, [settingsState?.HOTKEY]);
 
   useEffect(() => {
@@ -60,6 +65,27 @@ export default function SettingsProvider({
     [settingsState]
   );
 
+  const setFileWatchingEnabled = useCallback(
+    async (ENABLE_FILE_WATCHING: boolean) => {
+      await settingsTable.update('ENABLE_FILE_WATCHING', {
+        value: ENABLE_FILE_WATCHING,
+      });
+      setSettingsState({ ...settingsState, ENABLE_FILE_WATCHING });
+      window.BRIDGE.enableFileWatching(ENABLE_FILE_WATCHING);
+    },
+    [settingsState]
+  );
+
+  const setRescanOnStart = useCallback(
+    async (RESCAN_ON_START: boolean) => {
+      await settingsTable.update('RESCAN_ON_START', {
+        value: RESCAN_ON_START,
+      });
+      setSettingsState({ ...settingsState, RESCAN_ON_START });
+    },
+    [settingsState]
+  );
+
   const setHotkey = useCallback(
     async (HOTKEY: string) => {
       await settingsTable.update('HOTKEY', { value: HOTKEY });
@@ -73,7 +99,15 @@ export default function SettingsProvider({
   }
 
   return (
-    <SettingsContext.Provider value={{ ...settingsState, setTheme, setHotkey }}>
+    <SettingsContext.Provider
+      value={{
+        ...settingsState,
+        setTheme,
+        setHotkey,
+        setFileWatchingEnabled,
+        setRescanOnStart,
+      }}
+    >
       {children}
     </SettingsContext.Provider>
   );

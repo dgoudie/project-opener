@@ -10,6 +10,9 @@ import path from 'path';
 declare const PROJECT_OPENER_WEBPACK_ENTRY: string;
 declare const PROJECT_OPENER_PRELOAD_WEBPACK_ENTRY: string;
 
+//@ts-ignore
+process.env.ELECTRON_ENABLE_LOGGING = true;
+
 const gotTheLock = app.requestSingleInstanceLock();
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -20,7 +23,6 @@ if (require('electron-squirrel-startup') || !gotTheLock) {
 export let mainWindow: BrowserWindow;
 
 const createWindow = () => {
-  console.log(path.join(__dirname, 'assets/logo.ico'));
   // Create the browser window.
   mainWindow = new BrowserWindow({
     title: 'project-opener',
