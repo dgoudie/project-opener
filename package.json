@@ -44,11 +44,13 @@
   },
   "dependencies": {
     "@fontsource/roboto-slab": "^4.5.1",
+    "@fontsource/source-sans-pro": "^4.5.11",
     "@primer/octicons-react": "^17.11.1",
     "@primer/react": "^35.18.0",
     "@react-hook/debounce": "^4.0.0",
     "chokidar": "^3.5.3",
     "classnames": "^2.3.2",
+    "deepmerge": "^4.3.0",
     "dexie": "^3.2.0",
     "dexie-react-hooks": "^1.1.1",
     "electron-is-dev": "^2.0.0",
